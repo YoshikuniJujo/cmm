@@ -1,0 +1,12 @@
+tail_call(bits64 n, bits64 r) {
+	if (n > 0) {
+		jump tail_call(n - 1, r * n);
+	} else {
+		return(r);
+	}
+}
+
+foo() {
+	(bits64 ret) = call tail_call(10, 1);
+	return(ret);
+}

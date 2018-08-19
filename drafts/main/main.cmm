@@ -1,0 +1,5 @@
+export main;
+
+foreign "C" main()
+{
+}

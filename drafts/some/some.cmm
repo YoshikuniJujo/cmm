@@ -1,0 +1,3 @@
+hoge {
+	jump foo (bar, baz, poo);
+}

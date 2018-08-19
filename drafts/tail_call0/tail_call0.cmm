@@ -1,0 +1,14 @@
+factorial(bits64 n, bits64 s)
+{
+	if (n > 0) {
+		(bits64 ret) = call factorial(n - 1, s * n);
+		return(ret);
+	} else {
+		return(s);
+	}
+}
+
+call_factorial() {
+	(bits64 ret) = call factorial(10, 1);
+	return(ret);
+}

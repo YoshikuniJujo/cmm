@@ -1,0 +1,6 @@
+foo(bits64 bar) {
+	R1 = 321;
+	R2 = 654;
+	R3 = bar;
+	return(123);
+}
