@@ -9,3 +9,4 @@
 /brainf
 /test_putchar
 /check_memory_write.s
+/check_getchar
