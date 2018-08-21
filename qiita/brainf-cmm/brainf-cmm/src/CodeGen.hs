@@ -39,8 +39,8 @@ intoLoop f ops =
 	"} else {\n\t\treturn();\n\t}\n"
 
 toInstruction :: Op -> String
-toInstruction PtrInc = "\t\tR2 = R2 + 1;\n"
-toInstruction PtrDec = "\t\tR2 = R2 - 1;\n"
+toInstruction PtrInc = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
+toInstruction PtrDec = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
 toInstruction ValInc = "\t\tbits8[R2] = bits8[R2] + 1;\n"
 toInstruction ValDec = "\t\tbits8[R2] = bits8[R2] - 1;\n"
 toInstruction PutCh = "\t\tcall putchar_syscall(bits8[R2]);\n"
