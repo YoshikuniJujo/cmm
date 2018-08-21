@@ -18,6 +18,6 @@ main(int argc, char *argv[])
 	:
 	: );
 
-	printf("\nret: %lx\n", ret);
+	printf("\nret: %ld\n", ret);
 	return 0;
 }

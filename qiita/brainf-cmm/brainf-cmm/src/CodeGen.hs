@@ -26,7 +26,7 @@ header =
 
 topFun :: Function -> String
 topFun f = funName f ++ "()\n{\n" ++
-	concatMap toInstruction (funBody f) ++ "\t\treturn();\n}\n\n"
+	concatMap toInstruction (funBody f) ++ "\t\treturn(bits8[R2]);\n}\n\n"
 
 loopFun :: Function -> String
 loopFun f = funName f ++ "()\n{\n" ++
