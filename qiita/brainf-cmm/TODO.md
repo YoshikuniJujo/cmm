@@ -6,9 +6,6 @@ TODO
 
 * stackのプロジェクトを作成
 	+ 名前はbrainf\_cmmにしよう(\_使えたかな?-のほうがいいかな?)
-* パーサコンビネータを作成する
-	+ パッケージparsersのAPIを使用する
-* パーサを作成する
 * パーサから実際のコードに近い構造のADTを作成する
 * call\_cmm.cを作成
 * putchar\_syscallとgetchar\_syscallを含むライブラリio.sを作成
