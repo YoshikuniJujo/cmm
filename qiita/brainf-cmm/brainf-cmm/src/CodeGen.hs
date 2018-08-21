@@ -7,8 +7,7 @@ import Parser
 
 type FunName = String
 
-data Op = PtrInc | PtrDec | ValInc | ValDec | PutCh | GetCh | Call FunName
-	deriving Show
+data OpCall = Op Op | Call FunName deriving Show
 
 codeGen :: String -> Maybe String
 codeGen = (funsToCode . toFunctions . ("fun" ,) <$>) . parseBrainfCmm
@@ -38,16 +37,18 @@ intoLoop f ops =
 	"\t\tjump " ++ f ++ "();\n\t" ++
 	"} else {\n\t\treturn();\n\t}\n"
 
-toInstruction :: Op -> String
-toInstruction PtrInc = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
-toInstruction PtrDec = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
-toInstruction ValInc = "\t\tbits8[R2] = bits8[R2] + 1;\n"
-toInstruction ValDec = "\t\tbits8[R2] = bits8[R2] - 1;\n"
-toInstruction PutCh = "\t\tcall putchar_syscall(bits8[R2]);\n"
-toInstruction GetCh = "\t\t(bits8 r) = call getchar_syscall(); bits8[R2] = r;\n"
+toInstruction :: OpCall -> String
+toInstruction (Op PtrInc) = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
+toInstruction (Op PtrDec) = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
+toInstruction (Op ValInc) = "\t\tbits8[R2] = bits8[R2] + 1;\n"
+toInstruction (Op ValDec) = "\t\tbits8[R2] = bits8[R2] - 1;\n"
+toInstruction (Op PutCh) = "\t\tcall putchar_syscall(bits8[R2]);\n"
+toInstruction (Op GetCh) =
+	"\t\t(bits8 r) = call getchar_syscall(); bits8[R2] = r;\n"
 toInstruction (Call fn) = "\t\tcall " ++ fn ++ "();\n"
 
-data Function = Function { funName :: FunName, funBody :: [Op] } deriving Show
+data Function = Function { funName :: FunName, funBody :: [OpCall] }
+	deriving Show
 
 toFunctions :: (FunName, ParseForest) -> [Function]
 toFunctions (fn, pf) = Function fn ops : concatMap toFunctions fnpfs
@@ -55,19 +56,11 @@ toFunctions (fn, pf) = Function fn ops : concatMap toFunctions fnpfs
 	(ops, fnpfs) =
 		popFunction (map (((fn ++ "_") ++) . show) [(1 :: Int) ..]) pf
 
-popFunction :: [FunName] -> ParseForest -> ([Op], [(FunName, ParseForest)])
+popFunction :: [FunName] -> ParseForest -> ([OpCall], [(FunName, ParseForest)])
 popFunction fns (PtNop : pf) = popFunction fns pf
 popFunction (fn : fns) (PtLoop l : pf) = (Call fn : ops, (fn, l) : ls)
 	where (ops, ls) = popFunction fns pf
-popFunction fns (pt : pf) = (treeToOp pt : ops, ls)
+popFunction fns (PtOp op : pf) = (Op op : ops, ls)
 	where (ops, ls) = popFunction fns pf
 popFunction _ [] = ([], [])
-
-treeToOp :: ParseTree -> Op
-treeToOp PtPtrInc = PtrInc
-treeToOp PtPtrDec = PtrDec
-treeToOp PtValInc = ValInc
-treeToOp PtValDec = ValDec
-treeToOp PtPutCh = PutCh
-treeToOp PtGetCh = GetCh
-treeToOp pt = error $ "treeToOp: Cannnot convert " ++ show pt ++ " to Op"
+popFunction [] (PtLoop _ : _) = error "popFunction: function name missing"
