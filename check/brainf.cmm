@@ -1,0 +1,53 @@
+section "data"
+{
+	memory: bits8[30000];
+}
+
+cmm_main()
+{
+	R2 = memory;
+	(bits64 r) = call loop1();
+	return(r);
+}
+
+loop1()
+{
+/*
+	bits8[R2] = 67;
+	R2 = R2 + 1;
+	bits8[R2] = 35;
+	R2 = R2 - 1;
+	bits8 r;
+	r = bits8[R2];
+	foreign "C" putchar(r);
+	foreign "C" getchar_R1();
+	r = R1;
+	foreign "C" putchar(r);
+	R2 = R2 + 1;
+	bits8[R2] = 68;
+	R2 = R2 - 1;
+	bits8[R2] = 1;
+	*/
+	bits8 r;
+	r = R1;
+	R2 = R2 + 1;
+	bits8[R2] = 68;
+	R2 = R2 - 1;
+	bits8[R2] = 3;
+	call loop2();
+	return(r);
+}
+
+loop2()
+{
+	if (bits8[R2] > 0) {
+		R2 = R2 + 1;
+		call fun(bits8[R2]);
+//		foreign "C" putchar(bits8[R2]);
+		R2 = R2 - 1;
+		bits8[R2] = bits8[R2] - 1;
+		jump loop2();
+	} else {
+		return();
+	}
+}
