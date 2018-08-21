@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module Parser (ParseTree(..), parseBrainfCmm) where
+module Parser (ParseForest, ParseTree(..), parseBrainfCmm) where
 
 import Control.Applicative
 import Text.Parser.Combinators
