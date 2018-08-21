@@ -1,6 +1,6 @@
 cmm_main()
 {
 	foreign "C" printf("hello\n");
-	(bits64 r) = call fun();
+	(bits64 r) = call fun(114);
 	return(r);
 }

@@ -7,3 +7,5 @@
 /call_asm
 /brainf.s
 /brainf
+/test_putchar
+/check_memory_write.s
