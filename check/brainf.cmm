@@ -28,10 +28,11 @@ loop1()
 	R2 = R2 - 1;
 	bits8[R2] = 1;
 	*/
-	bits8 r;
-	r = R1;
+//	bits8 r;
 	R2 = R2 + 1;
 	bits8[R2] = 68;
+	(bits8 r) = call fun2();
+	bits8[R2] = r;
 	R2 = R2 - 1;
 	bits8[R2] = 3;
 	call loop2();
