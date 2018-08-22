@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module SimpleParser (Parse, parse) where
+module ParserCombinator (Parse, parse) where
 
 import Control.Applicative (Alternative(..))
 import Data.Maybe (listToMaybe)

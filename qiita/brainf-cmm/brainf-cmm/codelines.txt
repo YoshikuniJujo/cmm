@@ -1,0 +1,5 @@
+CodeGen.hs                              49
+Parser.hs                               26
+SimpleParser.hs                         38
+total                                   113
+

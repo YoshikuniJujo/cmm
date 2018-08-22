@@ -3,7 +3,7 @@
 
 module CodeGen (codeGen) where
 
-import Parser
+import BrainfParser
 
 type FunName = String
 

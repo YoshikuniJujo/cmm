@@ -1,13 +1,13 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module Parser (
+module BrainfParser (
 	ParseForest, ParseTree(..), Op(..), parseBrainfCmm ) where
 
 import Control.Applicative
 import Text.Parser.Combinators
 import Text.Parser.Char
 
-import SimpleParser (Parse, parse)
+import ParserCombinator (Parse, parse)
 
 type ParseForest = [ParseTree]
 
