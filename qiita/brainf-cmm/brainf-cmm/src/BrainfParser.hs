@@ -1,38 +1,33 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module BrainfParser (
-	ParseForest, ParseTree(..), Op(..), parseBrainfCmm ) where
+	ParseForest, ParseTree(..), Op(..), parseBrainf ) where
 
-import Control.Applicative
-import Text.Parser.Combinators
-import Text.Parser.Char
+import Control.Applicative (some)
+import Text.Parser.Combinators (choice)
+import Text.Parser.Char (char, noneOf)
 
 import ParserCombinator (Parse, parse)
 
 type ParseForest = [ParseTree]
-
-data ParseTree
-	= PtOp Op
-	| PtLoop ParseForest
-	| PtNop
-	deriving Show
-
+data ParseTree = PtNop | PtOp Op | PtLoop ParseForest deriving Show
 data Op = PtrInc | PtrDec | ValInc | ValDec | PutCh | GetCh deriving Show
 
-parseBrainfCmm :: String -> Maybe ParseForest
-parseBrainfCmm = parse prsBrainfCmm
+parseBrainf :: String -> Maybe ParseForest
+parseBrainf = parse prsBrainf
 
-prsBrainfCmm :: Parse ParseForest
-prsBrainfCmm = some $ choice [
-	prsPtrInc, prsPtrDec, prsValInc, prsValDec, prsPutCh, prsGetCh,
-	prsLoop, PtNop <$ noneOf ['[', ']'] ]
+prsBrainf :: Parse ParseForest
+prsBrainf = some $ choice [
+	prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
+	prsPutCh, prsGetCh, prsLoop ]
 
-prsPtrInc, prsPtrDec, prsValInc, prsValDec, prsPutCh, prsGetCh, prsLoop ::
-	Parse ParseTree
+prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
+	prsPutCh, prsGetCh, prsLoop :: Parse ParseTree
+prsNop = PtNop <$ noneOf "><+-.,[]"
 prsPtrInc = PtOp PtrInc <$ char '>'
 prsPtrDec = PtOp PtrDec <$ char '<'
 prsValInc = PtOp ValInc <$ char '+'
 prsValDec = PtOp ValDec <$ char '-'
 prsPutCh = PtOp PutCh <$ char '.'
 prsGetCh = PtOp GetCh <$ char ','
-prsLoop = PtLoop <$> (char '[' *> prsBrainfCmm <* char ']')
+prsLoop = PtLoop <$> (char '[' *> prsBrainf <* char ']')

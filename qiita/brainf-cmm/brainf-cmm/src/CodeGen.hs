@@ -10,7 +10,7 @@ type FunName = String
 data OpCall = Op Op | Call FunName deriving Show
 
 codeGen :: String -> Maybe String
-codeGen = (funsToCode . toFunctions . ("fun" ,) <$>) . parseBrainfCmm
+codeGen = (funsToCode . toFunctions . ("fun" ,) <$>) . parseBrainf
 
 funsToCode :: [Function] -> String
 funsToCode (tf : fs) = header ++ topFun tf ++ concatMap loopFun fs
