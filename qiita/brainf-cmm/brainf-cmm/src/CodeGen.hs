@@ -3,10 +3,10 @@
 
 module CodeGen (codeGen) where
 
-import BrainfParser (ParseForest, ParseTree(..), Op(..), parseBrainf)
+import ParseForest (ParseForest, ParseTree(..), Op(..))
 
-codeGen :: String -> Maybe String
-codeGen = (toCmm . toFunctions . ("fun" ,) <$>) . parseBrainf
+codeGen :: ParseForest -> String
+codeGen = toCmm . toFunctions . ("fun" ,)
 
 data OpCall = Op Op | Call FunName deriving Show
 type FunName = String

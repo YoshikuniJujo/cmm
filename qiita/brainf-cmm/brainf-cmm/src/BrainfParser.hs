@@ -1,28 +1,20 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module BrainfParser (
-	ParseForest, ParseTree(..), Op(..), parseBrainf ) where
+module BrainfParser (ParseForest, ParseTree(..), Op(..), prsBrainf) where
 
 import Control.Applicative (some)
 import Text.Parser.Combinators (choice)
-import Text.Parser.Char (char, noneOf)
+import Text.Parser.Char (CharParsing, char, noneOf)
 
-import ParserCombinator (Parse, parse)
+import ParseForest (ParseForest, ParseTree(..), Op(..))
 
-type ParseForest = [ParseTree]
-data ParseTree = PtNop | PtOp Op | PtLoop ParseForest deriving Show
-data Op = PtrInc | PtrDec | ValInc | ValDec | PutCh | GetCh deriving Show
-
-parseBrainf :: String -> Maybe ParseForest
-parseBrainf = parse prsBrainf
-
-prsBrainf :: Parse ParseForest
+prsBrainf :: CharParsing p => p ParseForest
 prsBrainf = some $ choice [
 	prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
 	prsPutCh, prsGetCh, prsLoop ]
 
 prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
-	prsPutCh, prsGetCh, prsLoop :: Parse ParseTree
+	prsPutCh, prsGetCh, prsLoop :: CharParsing p => p ParseTree
 prsNop = PtNop <$ noneOf "><+-.,[]"
 prsPtrInc = PtOp PtrInc <$ char '>'
 prsPtrDec = PtOp PtrDec <$ char '<'
