@@ -1,6 +1,8 @@
 /*.cmm
 /*.s
-simple
-getput
-hello
-mandel
+/simple
+/getput
+/hello
+/mandel
+/echo
+/hello2
