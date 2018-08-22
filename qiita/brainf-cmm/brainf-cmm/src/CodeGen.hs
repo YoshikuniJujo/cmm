@@ -18,15 +18,11 @@ toCmm _ = error "toCmm: no functions"
 header :: String
 header =
 	"section \"data\"\n{\n\tmemory: bits8[30000];\n}\n\n" ++
-	"cmm_main()\n{\n\t" ++
-		"R2 = memory;\n\t" ++
-		"(bits64 r) = call fun();\n\t" ++
-		"return(r);\n}\n\n"
+	"cmm_main()\n{\n\tR2 = memory;\n\tcall fun();\n\treturn();\n}\n\n"
 
 topFun :: Function -> String
 topFun Function { funName = fn, funBody = fb } =
-	fn ++ "()\n{\n" ++
-		concatMap toInstr fb ++ "\t\treturn(bits8[R2]);\n}\n\n"
+	fn ++ "()\n{\n" ++ concatMap toInstr fb ++ "\t\treturn();\n}\n\n"
 
 loopFun :: Function -> String
 loopFun Function { funName = fn, funBody = fb } =

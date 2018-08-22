@@ -1,5 +1,5 @@
-CodeGen.hs                              49
+CodeGen.hs                              44
 BrainfParser.hs                         23
 ParserCombinator.hs                     26
-total                                   98
+total                                   93
 
