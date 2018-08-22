@@ -2,15 +2,12 @@
 
 module Main where
 
-import System.Environment
-import System.FilePath
-
-import CodeGen
+import System.Environment (getArgs)
+import System.FilePath ((-<.>))
+import CodeGen (codeGen)
 
 main :: IO ()
 main = do
 	src : _ <- getArgs
-	cnt <- readFile src
-	case codeGen cnt of
-		Nothing -> putStrLn "parse error"
-		Just cmm -> writeFile (src -<.> "cmm") cmm
+	maybe (putStrLn "parse error") (writeFile $ src -<.> "cmm") . codeGen
+		=<< readFile src
