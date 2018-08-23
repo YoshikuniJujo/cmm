@@ -35,8 +35,10 @@ intoLoop fn ops =
 	"} else {\n\t\treturn();\n\t}\n"
 
 toInstr :: Int -> OpCall -> String
-toInstr _ (Op PtrInc) = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
-toInstr _ (Op PtrDec) = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
+toInstr _ (Op PtrInc) =
+	"\t\tif (R2 < memory + 29999) { R2 = R2 + 1; } else { R2 = memory; }\n"
+toInstr _ (Op PtrDec) =
+	"\t\tif (R2 > memory) { R2 = R2 - 1; } else { R2 = memory + 29999; }\n"
 toInstr _ (Op ValInc) = "\t\tbits8[R2] = bits8[R2] + 1;\n"
 toInstr _ (Op ValDec) = "\t\tbits8[R2] = bits8[R2] - 1;\n"
 toInstr _ (Op PutCh) = "\t\tcall putchar_syscall(bits8[R2]);\n"
