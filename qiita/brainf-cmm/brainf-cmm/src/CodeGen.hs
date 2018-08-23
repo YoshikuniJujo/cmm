@@ -22,27 +22,27 @@ header =
 	"R2 = memory;\n\tcall fun();\n\treturn(bits8[R2]);\n}\n\n"
 
 topFun :: Function -> String
-topFun Function { funName = fn, funBody = fb } =
-	fn ++ "()\n{\n" ++ concatMap toInstr fb ++ "\t\treturn();\n}\n\n"
+topFun Function { funName = fn, funBody = fb } = fn ++ "()\n{\n" ++
+	concat (zipWith toInstr [1 ..] fb) ++ "\t\treturn();\n}\n\n"
 
 loopFun :: Function -> String
-loopFun Function { funName = fn, funBody = fb } =
-	fn ++ "()\n{\n" ++ intoLoop fn (concatMap toInstr fb) ++ "}\n\n"
+loopFun Function { funName = fn, funBody = fb } = fn ++ "()\n{\n" ++
+	intoLoop fn (concat $ zipWith toInstr [1 ..] fb) ++ "}\n\n"
 
 intoLoop :: FunName -> String -> String
 intoLoop fn ops =
 	"\tif (bits8[R2] > 0) {\n" ++ ops ++ "\t\tjump " ++ fn ++ "();\n\t" ++
 	"} else {\n\t\treturn();\n\t}\n"
 
-toInstr :: OpCall -> String
-toInstr (Op PtrInc) = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
-toInstr (Op PtrDec) = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
-toInstr (Op ValInc) = "\t\tbits8[R2] = bits8[R2] + 1;\n"
-toInstr (Op ValDec) = "\t\tbits8[R2] = bits8[R2] - 1;\n"
-toInstr (Op PutCh) = "\t\tcall putchar_syscall(bits8[R2]);\n"
-toInstr (Op GetCh) =
-	"\t\t(bits8 r) = call getchar_syscall(); bits8[R2] = r;\n"
-toInstr (Call fn) = "\t\tcall " ++ fn ++ "();\n"
+toInstr :: Int -> OpCall -> String
+toInstr _ (Op PtrInc) = "\t\tif (R2 < memory + 29999) { R2 = R2 + 1; }\n"
+toInstr _ (Op PtrDec) = "\t\tif (R2 > memory) { R2 = R2 - 1; }\n"
+toInstr _ (Op ValInc) = "\t\tbits8[R2] = bits8[R2] + 1;\n"
+toInstr _ (Op ValDec) = "\t\tbits8[R2] = bits8[R2] - 1;\n"
+toInstr _ (Op PutCh) = "\t\tcall putchar_syscall(bits8[R2]);\n"
+toInstr i (Op GetCh) = "\t\t(bits8 r" ++ show i ++
+	") = call getchar_syscall(); bits8[R2] = r" ++ show i ++ ";\n"
+toInstr _ (Call fn) = "\t\tcall " ++ fn ++ "();\n"
 
 data Function = Function { funName :: FunName, funBody :: [OpCall] }
 	deriving Show
