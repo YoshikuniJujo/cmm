@@ -2,14 +2,14 @@
 
 module BrainfParser (ParseForest, ParseTree(..), Op(..), prsBrainf) where
 
-import Control.Applicative (some)
+import Control.Applicative (many)
 import Text.Parser.Combinators (choice)
 import Text.Parser.Char (CharParsing, char, noneOf)
 
 import ParseForest (ParseForest, ParseTree(..), Op(..))
 
 prsBrainf :: CharParsing p => p ParseForest
-prsBrainf = some $ choice [
+prsBrainf = many $ choice [
 	prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
 	prsPutCh, prsGetCh, prsLoop ]
 

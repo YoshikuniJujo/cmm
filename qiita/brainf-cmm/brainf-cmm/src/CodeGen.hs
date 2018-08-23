@@ -13,12 +13,13 @@ type FunName = String
 
 toCmm :: [Function] -> String
 toCmm (tf : fs) = header ++ topFun tf ++ concatMap loopFun fs
-toCmm _ = error "toCmm: no functions"
+toCmm [] = error "toCmm: no functions"
 
 header :: String
 header =
 	"section \"data\"\n{\n\tmemory: bits8[30000];\n}\n\n" ++
-	"cmm_main()\n{\n\tR2 = memory;\n\tcall fun();\n\treturn();\n}\n\n"
+	"cmm_main()\n{\n\t" ++
+	"R2 = memory;\n\tcall fun();\n\treturn(bits8[R2]);\n}\n\n"
 
 topFun :: Function -> String
 topFun Function { funName = fn, funBody = fb } =
