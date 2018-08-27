@@ -1,0 +1,5 @@
+cmm_main()
+{
+	call putstr_syscall("Hello, world!\n", 14);
+	return(123);
+}
