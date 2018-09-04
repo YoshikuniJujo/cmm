@@ -7,6 +7,8 @@ import HscMain
 import DynFlags
 import Packages
 import SysTools
+import CmmParse
+import Outputable
 
 myTopDir :: FilePath
 myTopDir = "topdir"
@@ -24,3 +26,9 @@ main = do
 	let	dflags'' = gopt_set dflags' Opt_NoHsMain
 		dflags''' = dflags'' { outputFile = Just "tmp/sample" }
 	linkBinary dflags''' ["tmp/sample.s", "../manual/call_cmm.c"] []
+	((wm, em), mcg) <- parseCmmFile dflags''' "../manual/sample.cmm"
+	output dflags (show <$> wm, show <$> em)
+	output dflags''' mcg
+
+output :: Outputable a => DynFlags -> a -> IO ()
+output df = putStrLn . showSDoc df . ppr
