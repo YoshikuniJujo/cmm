@@ -2,8 +2,10 @@
 
 module Main where
 
+import DriverPipeline
 import HscMain
 import DynFlags
+import Packages
 import SysTools
 
 myTopDir :: FilePath
@@ -18,3 +20,7 @@ main = do
 	dflags <- initDynFlags $ defaultDynFlags mySettings myLlvmTargets
 	env <- newHscEnv dflags
 	hscCompileCmmFile env "../manual/sample.cmm" "tmp/sample.s"
+	(dflags', _) <- initPackages dflags
+	let	dflags'' = gopt_set dflags' Opt_NoHsMain
+		dflags''' = dflags'' { outputFile = Just "tmp/sample" }
+	linkBinary dflags''' ["tmp/sample.s", "../manual/call_cmm.c"] []
