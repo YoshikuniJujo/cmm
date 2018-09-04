@@ -1,7 +1,6 @@
 メモ
 ====
 
-* とりあえずHello, world!をコマンドghcでコンパイル、リンクして、実行してみる
 * 構文木から.sファイルを作成してみる
 * 構文木をlazyに生成してみる
 * 構文木をインクリメンタルに生成しながら、.sファイルにコンパイルしてみる
@@ -54,3 +53,30 @@ getExecutablePathは/proc/self/exeをreadSymbolicLinkすることで、
 
 [ghc/Main.hs -Bオプション](
 https://github.com/ghc/ghc/blame/d1514e8f0e146e7b917bbb05465f875a5de4b2a4/ghc/Main.hs#L102)
+
+hscCompileCmmFile
+-----------------
+
+```hs
+hscCompileCmmFile :: HscEnv -> FilePath -> FilePath -> IO ()
+hscCompileCmmFile hsc_env filename output_filename = runHsc hsc_env $ do
+    let dflags = hsc_dflags hsc_env
+    cmm <- ioMsgMaybe $ parseCmmFile dflags filename
+    liftIO $ do
+        us <- mkSplitUniqSupply 'S'
+        let initTopSRT = initUs_ us emptySRT
+        dumpIfSet_dyn dflags Opt_D_dump_cmm_verbose "Parsed Cmm" (ppr cmm)
+        (_, cmmgroup) <- cmmPipeline hsc_env initTopSRT cmm
+        rawCmms <- cmmToRawCmm dflags (Stream.yield cmmgroup)
+        let -- Make up a module name to give the NCG. We can't pass bottom here
+            -- lest we reproduce #11784.
+            mod_name = mkModuleName $ "Cmm$" ++ FilePath.takeFileName filename
+            cmm_mod = mkModule (thisPackage dflags) mod_name
+        _ <- codeOutput dflags cmm_mod output_filename no_loc NoStubs [] []
+             rawCmms
+        return ()
+  where
+    no_loc = ModLocation{ ml_hs_file  = Just filename,
+                          ml_hi_file  = panic "hscCompileCmmFile: no hi file",
+                          ml_obj_file = panic "hscCompileCmmFile: no obj file" }
+```
