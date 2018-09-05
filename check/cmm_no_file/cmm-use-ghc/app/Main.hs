@@ -23,32 +23,37 @@ myTopDir = "topdir"
 -- myTopDir = "/home/tatsuya/.stack/" ++
 --	"programs/x86_64-linux/ghc-tinfo6-8.4.3/lib/ghc-8.4.3/"
 
-main :: IO ()
-main = do
+myDynFlags :: IO DynFlags
+myDynFlags = do
 	mySettings <- initSysTools $ Just myTopDir
 	myLlvmTargets <- initLlvmTargets $ Just myTopDir
 	dflags <- initDynFlags $ defaultDynFlags mySettings myLlvmTargets
-	env <- newHscEnv dflags
-	hscCompileCmmFile env "../manual/sample.cmm" "tmp/sample.s"
-	(dflags', _) <- initPackages dflags
+	(dflags', _ ) <- initPackages dflags
 	let	dflags'' = gopt_set dflags' Opt_NoHsMain
 		dflags''' = dflags'' { outputFile = Just "tmp/sample" }
-	linkBinary dflags''' ["tmp/sample.s", "../manual/call_cmm.c"] []
+	return dflags'''
 
-	((wm, em), Just cmm) <- parseCmmFile dflags''' "../manual/sample.cmm"
-	output dflags''' (show <$> wm, show <$> em)
-	output dflags''' cmm
+main :: IO ()
+main = do
+	dflags <- myDynFlags
+	env <- newHscEnv dflags
+	hscCompileCmmFile env "../manual/sample.cmm" "tmp/sample.s"
+	linkBinary dflags ["tmp/sample.s", "../manual/call_cmm.c"] []
+
+	((wm, em), Just cmm) <- parseCmmFile dflags "../manual/sample.cmm"
+	output dflags (show <$> wm, show <$> em)
+	output dflags cmm
 	putStrLn ""
 	us <- mkSplitUniqSupply 'S'
 	let initTopSRT = initUs_ us emptySRT
 	(_, cmmgroup) <- cmmPipeline env initTopSRT cmm
-	output dflags''' cmmgroup
+	output dflags cmmgroup
 	putStrLn ""
-	rawCmms <- cmmToRawCmm dflags''' $ Stream.yield cmmgroup
-	output dflags''' =<< Stream.collect rawCmms
+	rawCmms <- cmmToRawCmm dflags $ Stream.yield cmmgroup
+	output dflags =<< Stream.collect rawCmms
 	let	mod_name = mkModuleName $ "Cmm$" ++ "sample.cmm"
-		cmm_mod = mkModule (thisPackage dflags''') mod_name
-	_ <- codeOutput dflags''' cmm_mod "tmp/sample2.s" no_loc NoStubs [] []
+		cmm_mod = mkModule (thisPackage dflags) mod_name
+	_ <- codeOutput dflags cmm_mod "tmp/sample2.s" no_loc NoStubs [] []
 		rawCmms
 	return ()
 	where

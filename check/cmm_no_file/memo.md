@@ -1,8 +1,15 @@
 メモ
 ====
 
-* 構文木から.sファイルを作成してみる
+やること
+--------
+
 * 構文木をlazyに生成してみる
+	+ Stream IO CmmGroup ()をかえす関数を書いてみる
+		- CmmGroupのデータ構造を読む
+		- compiler/codeGen/StgCmm.hsを参考にする
+		- まずはcmm_main() { return(123); }をパースした結果と
+			同等なCmmGroupを組み立てるところから、かな
 * 構文木をインクリメンタルに生成しながら、.sファイルにコンパイルしてみる
 
 やったこと
@@ -11,6 +18,7 @@
 * パッケージghcを使って、.cmmを.sにコンパイルした
 * call\_cmm.cと合わせてリンクもした
 * .cmmをパースして構文木をoutputした
+* 構文木から.sファイルを作成してみる
 
 課題
 ----
@@ -79,4 +87,35 @@ hscCompileCmmFile hsc_env filename output_filename = runHsc hsc_env $ do
     no_loc = ModLocation{ ml_hs_file  = Just filename,
                           ml_hi_file  = panic "hscCompileCmmFile: no hi file",
                           ml_obj_file = panic "hscCompileCmmFile: no obj file" }
+```
+
+CmmGroup
+--------
+
+```hs
+type CmmGroup = GenCmmGroup CmmStatics CmmTopInfo CmmGraph
+type GenCmmGroup d h g = [GenCmmDecl d h g]
+data GenCmmDecl d h g
+	= CmmProc h CLabel [GlobalReg] g
+	| CmmData Section d
+
+data CmmStatics = Statics CLabel [CmmStatic]
+data CmmStatic = CmmStaticLit CmmLit | CmmUninitialised Int | CmmString [Word8]
+
+data CmmTopInfo = TopInfo {
+	info_tbls :: LabelMap CmmInfoTable,
+	stack_info :: CmmStackInfo }
+
+type CmmGraph = GenCmmGraph CmmNode
+data GenCmmGraph n = CmmGraph {
+	g_entry :: BlockId
+	g_graph :: Graph n C C }
+type Graph = Graph' Block
+data Graph' block (n :: * -> * -> *) e x where
+	GNil :: Graph' block n O O
+	GUnit :: block n O O -> Graph' block n O O
+	GMany :: MaybeO e (block n O C) ->
+		Body' block n -> MaybeO x (block n C O) -> Graph' block n e x
+data C
+data O
 ```
