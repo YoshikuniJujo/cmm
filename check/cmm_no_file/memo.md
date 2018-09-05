@@ -9,6 +9,7 @@
 		- CmmParseのデータ構造を読む
 		- CmmParseのデータ構造を組み立てる
 		- 実際にパースした結果と同じものを組み立ててみる
+		- それをコンパイルしてみる
 	+ Stream IO CmmGroup ()をかえす関数を書いてみる
 		- CmmGroupのデータ構造を読む
 		- compiler/codeGen/StgCmm.hsを参考にする
@@ -122,4 +123,11 @@ data Graph' block (n :: * -> * -> *) e x where
 		Body' block n -> MaybeO x (block n C O) -> Graph' block n e x
 data C
 data O
+```
+
+CmmParse
+--------
+
+```hs
+newtype CmmParse a = EC { unEC :: String -> Env -> Decls -> FCode (Decls, a) }
 ```
