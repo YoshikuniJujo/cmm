@@ -5,6 +5,10 @@
 --------
 
 * 構文木をlazyに生成してみる
+	+ .cmmのパーサの出力と同等のものを書いてみる
+		- CmmParseのデータ構造を読む
+		- CmmParseのデータ構造を組み立てる
+		- 実際にパースした結果と同じものを組み立ててみる
 	+ Stream IO CmmGroup ()をかえす関数を書いてみる
 		- CmmGroupのデータ構造を読む
 		- compiler/codeGen/StgCmm.hsを参考にする

@@ -5,8 +5,6 @@ module Main where
 import DriverPipeline
 import HscMain
 import DynFlags
-import Packages
-import SysTools
 import CmmParse
 import CmmPipeline
 import CmmBuildInfoTables
@@ -18,20 +16,7 @@ import HscTypes
 import Module
 import CodeOutput
 
-myTopDir :: FilePath
-myTopDir = "topdir"
--- myTopDir = "/home/tatsuya/.stack/" ++
---	"programs/x86_64-linux/ghc-tinfo6-8.4.3/lib/ghc-8.4.3/"
-
-myDynFlags :: IO DynFlags
-myDynFlags = do
-	mySettings <- initSysTools $ Just myTopDir
-	myLlvmTargets <- initLlvmTargets $ Just myTopDir
-	dflags <- initDynFlags $ defaultDynFlags mySettings myLlvmTargets
-	(dflags', _ ) <- initPackages dflags
-	let	dflags'' = gopt_set dflags' Opt_NoHsMain
-		dflags''' = dflags'' { outputFile = Just "tmp/sample" }
-	return dflags'''
+import Tools
 
 main :: IO ()
 main = do
@@ -61,6 +46,3 @@ main = do
 		ml_hs_file = Just "sample.cmm",
 		ml_hi_file = panic "boo",
 		ml_obj_file = panic "boo" }
-
-output :: Outputable a => DynFlags -> a -> IO ()
-output df = putStrLn . showSDoc df . ppr
