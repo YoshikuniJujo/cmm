@@ -8,7 +8,6 @@ import Prelude hiding (lex)
 import Lexer
 import SrcLoc
 import StringBuffer
-import Outputable
 
 import Tools
 
@@ -29,9 +28,3 @@ myPState = mkPState
 	dflags0
 	(stringToStringBuffer "main = putStrLn \"hello\"")
 	(mkRealSrcLoc "foo.hs" 0 0)
-
-getResult :: ParseResult a -> Maybe a
-getResult = \case POk _ x -> Just x; _ -> Nothing
-
-outResult :: Outputable a => ParseResult a -> IO ()
-outResult = out . getResult

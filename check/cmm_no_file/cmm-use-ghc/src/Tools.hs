@@ -1,6 +1,8 @@
+{-# LANGUAGE LambdaCase #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module Tools (myDynFlags, dflags0, output, out) where
+module Tools (
+	myDynFlags, dflags0, output, out, getResult, outResult) where
 
 import System.IO.Unsafe
 
@@ -8,6 +10,8 @@ import DynFlags
 import Packages
 import SysTools
 import Outputable
+
+import Lexer
 
 myTopDir :: FilePath
 myTopDir = "topdir"
@@ -32,3 +36,9 @@ dflags0 = unsafePerformIO myDynFlags
 
 out :: Outputable a => a -> IO ()
 out = output dflags0
+
+getResult :: ParseResult a -> Maybe a
+getResult = \case POk _ x -> Just x; _ -> Nothing
+
+outResult :: Outputable a => ParseResult a -> IO ()
+outResult = out . getResult
