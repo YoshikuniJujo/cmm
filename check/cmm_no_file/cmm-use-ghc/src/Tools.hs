@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module Tools (myDynFlags, output) where
+module Tools (myDynFlags, dflags0, output, out) where
+
+import System.IO.Unsafe
 
 import DynFlags
 import Packages
@@ -24,3 +26,9 @@ myDynFlags = do
 
 output :: Outputable a => DynFlags -> a -> IO ()
 output df = putStrLn . showSDoc df . ppr
+
+dflags0 :: DynFlags
+dflags0 = unsafePerformIO myDynFlags
+
+out :: Outputable a => a -> IO ()
+out = output dflags0

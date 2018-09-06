@@ -20,25 +20,24 @@ import Tools
 
 main :: IO ()
 main = do
-	dflags <- myDynFlags
-	env <- newHscEnv dflags
+	env <- newHscEnv dflags0
 	hscCompileCmmFile env "../manual/sample.cmm" "tmp/sample.s"
-	linkBinary dflags ["tmp/sample.s", "../manual/call_cmm.c"] []
+	linkBinary dflags0 ["tmp/sample.s", "../manual/call_cmm.c"] []
 
-	((wm, em), Just cmm) <- parseCmmFile dflags "../manual/sample.cmm"
-	output dflags (show <$> wm, show <$> em)
-	output dflags cmm
+	((wm, em), Just cmm) <- parseCmmFile dflags0 "../manual/sample.cmm"
+	output dflags0 (show <$> wm, show <$> em)
+	output dflags0 cmm
 	putStrLn ""
 	us <- mkSplitUniqSupply 'S'
 	let initTopSRT = initUs_ us emptySRT
 	(_, cmmgroup) <- cmmPipeline env initTopSRT cmm
-	output dflags cmmgroup
+	output dflags0 cmmgroup
 	putStrLn ""
-	rawCmms <- cmmToRawCmm dflags $ Stream.yield cmmgroup
-	output dflags =<< Stream.collect rawCmms
+	rawCmms <- cmmToRawCmm dflags0 $ Stream.yield cmmgroup
+	output dflags0 =<< Stream.collect rawCmms
 	let	mod_name = mkModuleName $ "Cmm$" ++ "sample.cmm"
-		cmm_mod = mkModule (thisPackage dflags) mod_name
-	_ <- codeOutput dflags cmm_mod "tmp/sample2.s" no_loc NoStubs [] []
+		cmm_mod = mkModule (thisPackage dflags0) mod_name
+	_ <- codeOutput dflags0 cmm_mod "tmp/sample2.s" no_loc NoStubs [] []
 		rawCmms
 	return ()
 	where

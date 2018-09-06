@@ -21,14 +21,8 @@ import Unique
 
 import Tools
 
-dflags :: DynFlags
-dflags = unsafePerformIO myDynFlags
-
-out :: Outputable a => a -> IO ()
-out = output dflags
-
 helloL :: CLabel
-helloL = mkCmmCodeLabel (thisPackage dflags) "hello"
+helloL = mkCmmCodeLabel (thisPackage dflags0) "hello"
 
 sample1 :: GenCmmGroup CmmStatics CmmTopInfo CmmGraph
 sample1 = [
