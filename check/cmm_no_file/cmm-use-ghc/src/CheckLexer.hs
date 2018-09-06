@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module CheckCmmLexer where
+module CheckLexer where
 
 import Prelude hiding (lex)
 
