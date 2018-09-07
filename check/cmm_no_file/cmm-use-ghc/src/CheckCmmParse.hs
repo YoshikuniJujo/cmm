@@ -10,6 +10,9 @@ import CmmParse
 import CLabel
 import Hoopl.Label
 import Hoopl.Collections
+import Hoopl.Graph
+import Hoopl.Block
+import BlockId
 import SMRep
 import DynFlags
 
@@ -26,24 +29,31 @@ myGlobalRegs :: [GlobalReg]
 myGraph :: CmmGraph
 [CmmProc myTopInfo myCLabel myGlobalRegs myGraph] = myCmmParsed
 
+myTopInfo0 :: CmmTopInfo
+myTopInfo0 = TopInfo myInfoTbls0 myStackInfo0
+myCLabel0 :: CLabel
+myCLabel0 = mkCmmCodeLabel (thisPackage dflags0) "cmm_main"
+myGlobalRegs0 :: [GlobalReg]
+myGlobalRegs0 = []
+
+------------------------------------------------------------------
+
 myInfoTbls :: LabelMap CmmInfoTable
 myStackInfo :: CmmStackInfo
 TopInfo myInfoTbls myStackInfo = myTopInfo
 
-{-
-mapSize myInfoTbls == 0
+myInfoTbls0 :: LabelMap CmmInfoTable
+myInfoTbls0 = mapEmpty
+myStackInfo0 :: CmmStackInfo
+myStackInfo0 = StackInfo 8 (Just 8) True
 
-myCitLbl :: CLabel
-myCitRep :: SMRep
-myCitProf :: ProfilingInfo
-myCitSrt :: C_SRT
-CmmInfoTable myCitLbl myCitRep myCitProf myCitSrt = myInfoTbls
--}
+myGEntry :: BlockId
+myGGraph :: Graph CmmNode C C
+CmmGraph myGEntry myGGraph = myGraph
+
+-------------------------------------------------------------------
 
 myArgSpace :: ByteOff
 myUpdfrSpace :: Maybe ByteOff
 myDoLayout :: Bool
 StackInfo myArgSpace myUpdfrSpace myDoLayout = myStackInfo
-
-myCLabel0 :: CLabel
-myCLabel0 = mkCmmCodeLabel (thisPackage dflags0) "cmm_main"
