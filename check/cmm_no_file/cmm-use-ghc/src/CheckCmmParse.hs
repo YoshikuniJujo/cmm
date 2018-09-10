@@ -51,6 +51,9 @@ myGEntry :: BlockId
 myGGraph :: Graph CmmNode C C
 CmmGraph myGEntry myGGraph = myGraph
 
+myGEntry0 :: BlockId
+myGEntry0 = unsafePerformIO $ getMyBlockId
+
 -------------------------------------------------------------------
 
 myArgSpace :: ByteOff

@@ -2,7 +2,8 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module Tools (
-	myDynFlags, dflags0, output, out, getResult, outResult) where
+	myDynFlags, dflags0, output, out, getResult, outResult,
+	getMyBlockId) where
 
 import System.IO.Unsafe
 
@@ -12,6 +13,9 @@ import SysTools
 import Outputable
 
 import Lexer
+
+import UniqSupply
+import BlockId
 
 myTopDir :: FilePath
 myTopDir = "topdir"
@@ -42,3 +46,13 @@ getResult = \case POk _ x -> Just x; _ -> Nothing
 
 outResult :: Outputable a => ParseResult a -> IO ()
 outResult = out . getResult
+
+runUniqSM :: UniqSM a -> IO a
+runUniqSM m = do
+	us <- mkSplitUniqSupply 'u'
+	return (initUs_ us m)
+
+getMyBlockId :: IO BlockId
+getMyBlockId = runUniqSM $ do
+	u <- getUniqueM
+	return $ mkBlockId u
