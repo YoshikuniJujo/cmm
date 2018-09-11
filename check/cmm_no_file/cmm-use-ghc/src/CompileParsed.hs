@@ -25,7 +25,7 @@ doPipeline :: IO ()
 doPipeline = liftIO $ do
 	us <- mkSplitUniqSupply 'S'
 	let	initTopSRT = initUs_ us emptySRT
-	(_, cmmgroup) <- cmmPipeline myEnv0 initTopSRT myCmmParsed
+	(_, cmmgroup) <- cmmPipeline myEnv0 initTopSRT myCmmParsed0
 	rawCmms <- cmmToRawCmm dflags0 $ Stream.yield cmmgroup
 	let	mod_name = mkModuleName "Cmm$foo.cmm"
 		cmm_mod = mkModule (thisPackage dflags0) mod_name
