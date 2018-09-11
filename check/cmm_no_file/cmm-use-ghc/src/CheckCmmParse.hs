@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module CheckCmmParse where
+module CheckCmmParse (myCmmParsed, myCmmParsed0) where
 
 import System.IO.Unsafe
 

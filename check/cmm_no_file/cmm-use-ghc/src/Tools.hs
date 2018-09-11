@@ -3,7 +3,7 @@
 
 module Tools (
 	myDynFlags, dflags0, output, out, getResult, outResult,
-	getMyBlockId) where
+	getMyBlockId, myEnv0, getMyEnv) where
 
 import System.IO.Unsafe
 
@@ -17,10 +17,19 @@ import Lexer
 import UniqSupply
 import BlockId
 
+import HscMain
+import HscTypes
+
 myTopDir :: FilePath
 myTopDir = "topdir"
 -- myTopDir = "/home/tatsuya/.stack/" ++
 --	"programs/x86_64-linux/ghc-tinfo6-8.4.3/lib/ghc-8.4.3/"
+
+myEnv0 :: HscEnv
+myEnv0 = unsafePerformIO getMyEnv
+
+getMyEnv :: IO HscEnv
+getMyEnv = newHscEnv dflags0
 
 myDynFlags :: IO DynFlags
 myDynFlags = do
