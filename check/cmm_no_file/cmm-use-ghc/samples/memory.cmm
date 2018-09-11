@@ -1,0 +1,4 @@
+section "data"
+{
+	memory: bits8[30000];
+}
