@@ -14,6 +14,7 @@ import DynFlags
 import CodeOutput
 import Panic
 import HscTypes
+import DriverPipeline
 
 import CheckCmmParse
 import Tools
@@ -35,3 +36,7 @@ doPipeline = liftIO $ do
 		ml_hs_file = Just "sample/sample.cmm",
 		ml_hi_file = panic "no ml_hl_file",
 		ml_obj_file = panic "no ml_obj_file" }
+
+
+linkFoo :: IO ()
+linkFoo = linkBinary dflags0 ["tmp/sample.s", "../manual/call_cmm.c"] []
