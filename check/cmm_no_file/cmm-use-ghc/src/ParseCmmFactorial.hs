@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module ParseCmmFactorial where
@@ -12,7 +12,9 @@ import CLabel
 import Hoopl.Collections
 import Hoopl.Graph
 import Hoopl.Block
+import Hoopl.Label
 import BlockId
+import Unique
 
 import Tools
 import ToolsCmmGroup
@@ -50,3 +52,63 @@ mainGEntry, factGEntry :: BlockId
 mainGGraph, factGGraph :: Graph CmmNode C C
 CmmGraph mainGEntry mainGGraph = mainGraph
 CmmGraph factGEntry factGGraph = factGraph
+
+----------------------------------------------------------------------
+
+mainGManyCenter, factGManyCenter :: Body CmmNode
+GMany NothingO mainGManyCenter NothingO = mainGGraph
+GMany NothingO factGManyCenter NothingO = factGGraph
+
+----------------------------------------------------------------------
+
+mainReturnLabel, mainCallLabel :: Label
+mainReturnBlock, mainCallBlock :: Block CmmNode C C
+[	(mainReturnLabel, mainReturnBlock),
+	(mainCallLabel, mainCallBlock) ] = mapToList mainGManyCenter
+
+factRecLabel, factLoopLabel, factReturnLabel, factIfLabel :: Label
+factRecBlock, factLoopBlock, factReturnBlock, factIfBlock :: Block CmmNode C C
+[	(factRecLabel, factRecBlock),
+	(factLoopLabel, factLoopBlock),
+	(factReturnLabel, factReturnBlock),
+	(factIfLabel, factIfBlock) ] = mapToList factGManyCenter
+
+----------------------------------------------------------------------
+
+mainReturnEntry :: CmmNode C O
+mainReturnAssign :: Block CmmNode O O
+mainReturnCall :: CmmNode O C
+BlockCC mainReturnEntry mainReturnAssign mainReturnCall = mainReturnBlock
+
+mainReturnEntry0 :: CmmNode C O
+mainReturnEntry0 = CmmEntry mainReturnEntryLabel0 GlobalScope
+
+----------------------------------------------------------------------
+
+mainReturnEntryLabel :: Label
+CmmEntry mainReturnEntryLabel GlobalScope = mainReturnEntry
+mainReturnAssignToMem :: CmmNode O O
+mainReturnAssignFromMem :: CmmNode O O
+BSnoc (BMiddle mainReturnAssignToMem) mainReturnAssignFromMem = mainReturnAssign
+gcWordDflags0 :: CmmType
+CmmCall	(CmmLoad (CmmStackSlot Old 8) gcWordDflags0)
+	Nothing
+	[VanillaReg 1 VNonGcPtr] 8 0 8 = mainReturnCall
+
+mainReturnAssignToMem0 :: CmmNode O O
+mainReturnAssignToMem0 = CmmAssign
+	(CmmLocal (LocalReg unique1 b64))
+	(CmmReg (CmmGlobal (VanillaReg 1 VNonGcPtr)))
+
+----------------------------------------------------------------------
+
+CmmAssign
+	(CmmLocal (LocalReg a itsB64))
+	(CmmReg (CmmGlobal (VanillaReg 1 VNonGcPtr))) = mainReturnAssignToMem
+
+----------------------------------------------------------------------
+
+mainReturnEntryLabel0 :: Label
+mainReturnEntryLabel0 = mkBlockId unique0
+unique0, unique1 :: Unique
+unique0 : unique1 : _ = unsafePerformIO $ getMyUniqueList 10

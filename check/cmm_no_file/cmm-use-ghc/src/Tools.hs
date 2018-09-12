@@ -3,7 +3,7 @@
 
 module Tools (
 	myDynFlags, dflags0, output, out, getResult, outResult,
-	getMyBlockId, myEnv0, getMyEnv) where
+	getMyBlockId, myEnv0, getMyEnv, getMyBlockIdList, getMyUniqueList) where
 
 import System.IO.Unsafe
 
@@ -19,6 +19,8 @@ import BlockId
 
 import HscMain
 import HscTypes
+
+import Unique
 
 myTopDir :: FilePath
 myTopDir = "topdir"
@@ -65,3 +67,21 @@ getMyBlockId :: IO BlockId
 getMyBlockId = runUniqSM $ do
 	u <- getUniqueM
 	return $ mkBlockId u
+
+getMyBlockIdList :: Int -> IO [BlockId]
+getMyBlockIdList = runUniqSM . go
+	where
+	go n | n < 1 = return []
+	go n = do
+		u <- getUniqueM
+		bids <- go $ n - 1
+		return $ mkBlockId u : bids
+
+getMyUniqueList :: Int -> IO [Unique]
+getMyUniqueList = runUniqSM . go
+	where
+	go n | n < 1 = return []
+	go n = do
+		u <- getUniqueM
+		bids <- go $ n - 1
+		return $ u : bids

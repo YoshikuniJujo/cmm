@@ -18,7 +18,6 @@ import SMRep
 import DynFlags
 import CoreSyn
 import SrcLoc
-import CmmExpr
 
 import Tools
 
@@ -176,40 +175,3 @@ CmmAssign (CmmGlobal myCmmReg) (CmmLit (CmmInt 123 W64)) = myBodyCenterRight
 myArea :: Area
 myCmmStackSlotInt :: Int
 CmmStackSlot myArea myCmmStackSlotInt = myCmmExprOldP
-
----------------------------------------------------------------------
-
-checkBlock :: Block CmmNode e x -> String
-checkBlock = \case
-	BlockCO _ _ -> "BlockCO"
-	BlockCC _ _ _ -> "BlockCC"
-	BlockOC _ _ -> "BlockOC"
-	BNil -> "BNil"
-	BMiddle _ -> "BMiddle"
-	BCat _ _ -> "BCat"
-	BSnoc _ _ -> "BSnoc"
-	BCons _ _ -> "BCons"
-
-checkCmmNode :: CmmNode e x -> String
-checkCmmNode = \case
-	CmmEntry _ _ -> "CmmEntry"
-	CmmComment _ -> "CmmComment"
-	CmmTick _ -> "CmmTick"
-	CmmUnwind _ -> "CmmUnwind"
-	CmmAssign _ _ -> "CmmAssign"
-	CmmStore _ _ -> "CmmStore"
-	CmmUnsafeForeignCall _ _ _ -> "CmmUnsafeForeignCall"
-	CmmBranch _ -> "CmmBranch"
-	CmmCondBranch _ _ _ _ -> "CmmCondBranch"
-	CmmSwitch _ _ -> "CmmSwitch"
-	CmmCall _ _ _ _ _ _ -> "CmmCall"
-	CmmForeignCall _ _ _ _ _ _ _ -> "CmmForeignCall"
-
-checkCmmExpr :: CmmExpr -> String
-checkCmmExpr = \case
-	CmmLit _ -> "CmmLit"
-	CmmLoad _ _ -> "CmmLoad"
-	CmmReg _ -> "CmmReg"
-	CmmMachOp _ _ -> "CmmMachOp"
-	CmmStackSlot _ _ -> "CmmStackSlot"
-	CmmRegOff _ _ -> "CmmRegOff"
