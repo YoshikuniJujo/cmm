@@ -1,0 +1,14 @@
+cmm_main()
+{
+	(bits64 ret) = call factorial(10, 1);
+	return(ret);
+}
+
+factorial(bits64 n, bits64 s)
+{
+	if (n > 0) {
+		jump factorial(n - 1, s * n);
+	} else {
+		return(s);
+	}
+}
