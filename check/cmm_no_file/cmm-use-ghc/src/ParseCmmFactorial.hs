@@ -66,6 +66,10 @@ mainReturnBlock, mainCallBlock :: Block CmmNode C C
 [	(mainReturnLabel, mainReturnBlock),
 	(mainCallLabel, mainCallBlock) ] = mapToList mainGManyCenter
 
+mainReturnBlock0, mainCallBlock0 :: Block CmmNode C C
+mainReturnBlock0 = BlockCC mainReturnEntry0 mainReturnAssign0 mainReturnCall0
+mainCallBlock0 = undefined
+
 factRecLabel, factLoopLabel, factReturnLabel, factIfLabel :: Label
 factRecBlock, factLoopBlock, factReturnBlock, factIfBlock :: Block CmmNode C C
 [	(factRecLabel, factRecBlock),
@@ -82,6 +86,21 @@ BlockCC mainReturnEntry mainReturnAssign mainReturnCall = mainReturnBlock
 
 mainReturnEntry0 :: CmmNode C O
 mainReturnEntry0 = CmmEntry mainReturnEntryLabel0 GlobalScope
+mainReturnAssign0 :: Block CmmNode O O
+mainReturnAssign0 =
+	BSnoc (BMiddle mainReturnAssignToMem0) mainReturnAssignFromMem0
+mainReturnCall0 :: CmmNode O C
+mainReturnCall0 = CmmCall
+	(CmmLoad (CmmStackSlot Old 8) $ gcWord dflags0)
+	Nothing [VanillaReg 1 VNonGcPtr] 8 0 8
+
+mainCallEntry :: CmmNode C O
+mainCallAssign :: Block CmmNode O O
+mainCallCall :: CmmNode O C
+BlockCC mainCallEntry mainCallAssign mainCallCall = mainCallBlock
+
+mainCallEntry0 :: CmmNode C O
+mainCallEntry0 = CmmEntry mainCallEntryLabel0 GlobalScope
 
 ----------------------------------------------------------------------
 
@@ -95,20 +114,28 @@ CmmCall	(CmmLoad (CmmStackSlot Old 8) gcWordDflags0)
 	Nothing
 	[VanillaReg 1 VNonGcPtr] 8 0 8 = mainReturnCall
 
-mainReturnAssignToMem0 :: CmmNode O O
+mainReturnAssignToMem0, mainReturnAssignFromMem0 :: CmmNode O O
 mainReturnAssignToMem0 = CmmAssign
 	(CmmLocal (LocalReg unique1 b64))
 	(CmmReg (CmmGlobal (VanillaReg 1 VNonGcPtr)))
+mainReturnAssignFromMem0 = CmmAssign
+	(CmmGlobal (VanillaReg 1 VNonGcPtr))
+	(CmmReg (CmmLocal (LocalReg unique1 b64)))
 
 ----------------------------------------------------------------------
 
+itsB64, itsB64_2 :: CmmType
 CmmAssign
-	(CmmLocal (LocalReg a itsB64))
+	(CmmLocal (LocalReg _ itsB64))
 	(CmmReg (CmmGlobal (VanillaReg 1 VNonGcPtr))) = mainReturnAssignToMem
+CmmAssign
+	(CmmGlobal (VanillaReg 1 VNonGcPtr))
+	(CmmReg (CmmLocal (LocalReg _ itsB64_2))) = mainReturnAssignFromMem
 
 ----------------------------------------------------------------------
 
-mainReturnEntryLabel0 :: Label
+mainReturnEntryLabel0, mainCallEntryLabel0 :: Label
 mainReturnEntryLabel0 = mkBlockId unique0
-unique0, unique1 :: Unique
-unique0 : unique1 : _ = unsafePerformIO $ getMyUniqueList 10
+mainCallEntryLabel0 = mkBlockId unique2
+unique0, unique1, unique2 :: Unique
+unique0 : unique1 : unique2 : _ = unsafePerformIO $ getMyUniqueList 10
