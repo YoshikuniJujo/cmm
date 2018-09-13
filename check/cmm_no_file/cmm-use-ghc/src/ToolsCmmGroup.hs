@@ -5,6 +5,7 @@ module ToolsCmmGroup where
 
 import Cmm
 import Hoopl.Block
+import CoreSyn
 
 cmmProcOrData :: GenCmmDecl d h g -> String
 cmmProcOrData = \case
@@ -54,3 +55,21 @@ checkCmmExpr = \case
 	CmmMachOp _ _ -> "CmmMachOp"
 	CmmStackSlot _ _ -> "CmmStackSlot"
 	CmmRegOff _ _ -> "CmmRegOff"
+
+checkCmmLit :: CmmLit -> String
+checkCmmLit = \case
+	CmmInt _ _ -> "CmmInt"
+	CmmFloat _ _ -> "CmmFloat"
+	CmmVec _ -> "CmmVec"
+	CmmLabel _ -> "CmmLabel"
+	CmmLabelOff _ _ -> "CmmLabelOff"
+	CmmLabelDiffOff _ _ _ -> "CmmLabelDiffOff"
+	CmmBlock _ -> "CmmBlock"
+	CmmHighStackMark -> "CmmHighStackMark"
+
+checkTickish :: Tickish a -> String
+checkTickish = \case
+	ProfNote _ _ _ -> "ProfNote"
+	HpcTick _ _ -> "HpcTick"
+	Breakpoint _ _ -> "Breakpoint"
+	SourceNote  _ _ -> "SourceNote"

@@ -15,6 +15,8 @@ import Hoopl.Block
 import Hoopl.Label
 import BlockId
 import Unique
+import CoreSyn
+import SrcLoc
 
 import Tools
 import ToolsCmmGroup
@@ -121,6 +123,29 @@ mainReturnAssignToMem0 = CmmAssign
 mainReturnAssignFromMem0 = CmmAssign
 	(CmmGlobal (VanillaReg 1 VNonGcPtr))
 	(CmmReg (CmmLocal (LocalReg unique1 b64)))
+
+realSrcSpanFact2152 :: RealSrcSpan
+mainReturnEntryBId :: BlockId
+mainReturnEntryBId2 :: BlockId
+BSnoc	(BSnoc	(BSnoc	(BMiddle
+				(CmmTick
+					(SourceNote
+						realSrcSpanFact2152
+						"cmm_main")))
+				(CmmStore
+					(CmmStackSlot
+						(Young mainReturnEntryBId)
+						8)
+					(CmmLit
+						(CmmBlock
+							mainReturnEntryBId2))))
+		(CmmAssign
+			(CmmGlobal (VanillaReg 2 VNonGcPtr))
+			(CmmLit (CmmInt 1 W64))))
+	(CmmAssign
+		(CmmGlobal (VanillaReg 1 VNonGcPtr))
+		(CmmLit (CmmInt 10 W64))) =
+	mainCallAssign
 
 ----------------------------------------------------------------------
 
