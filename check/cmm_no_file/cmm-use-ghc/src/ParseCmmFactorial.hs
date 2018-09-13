@@ -47,6 +47,8 @@ factCLabel0 = mkCmmCodeLabel (thisPackage dflags0) "factorial"
 mainGlobalRegs0, factGlobalRegs0 :: [GlobalReg]
 mainGlobalRegs0 = []
 factGlobalRegs0 = []
+mainGraph0 :: CmmGraph
+mainGraph0 = CmmGraph mainGEntry0  mainGGraph0
 
 ----------------------------------------------------------------------
 
@@ -55,11 +57,21 @@ mainGGraph, factGGraph :: Graph CmmNode C C
 CmmGraph mainGEntry mainGGraph = mainGraph
 CmmGraph factGEntry factGGraph = factGraph
 
+mainGEntry0 :: BlockId
+mainGEntry0 = mainCallEntryLabel0
+mainGGraph0 :: Graph CmmNode C C
+mainGGraph0 = GMany NothingO mainGManyCenter0 NothingO
+
 ----------------------------------------------------------------------
 
 mainGManyCenter, factGManyCenter :: Body CmmNode
 GMany NothingO mainGManyCenter NothingO = mainGGraph
 GMany NothingO factGManyCenter NothingO = factGGraph
+
+mainGManyCenter0 :: Body CmmNode
+mainGManyCenter0 = mapFromList [
+	(mainReturnEntryLabel0, mainReturnBlock0),
+	(mainCallEntryLabel0, mainCallBlock0) ]
 
 ----------------------------------------------------------------------
 
@@ -70,7 +82,7 @@ mainReturnBlock, mainCallBlock :: Block CmmNode C C
 
 mainReturnBlock0, mainCallBlock0 :: Block CmmNode C C
 mainReturnBlock0 = BlockCC mainReturnEntry0 mainReturnAssign0 mainReturnCall0
-mainCallBlock0 = undefined
+mainCallBlock0 = BlockCC mainCallEntry0 mainCallAssign0 mainCallCall0
 
 factRecLabel, factLoopLabel, factReturnLabel, factIfLabel :: Label
 factRecBlock, factLoopBlock, factReturnBlock, factIfBlock :: Block CmmNode C C
@@ -103,6 +115,34 @@ BlockCC mainCallEntry mainCallAssign mainCallCall = mainCallBlock
 
 mainCallEntry0 :: CmmNode C O
 mainCallEntry0 = CmmEntry mainCallEntryLabel0 GlobalScope
+mainCallAssign0 :: Block CmmNode O O
+mainCallAssign0 =
+	BSnoc	(BSnoc	(BSnoc	(BMiddle
+					(CmmTick
+						(SourceNote
+							realSrcSpanFact2152_0
+							"cmm_main")))
+					(CmmStore
+						(CmmStackSlot
+							(Young mainReturnEntryBId0)
+							8)
+						(CmmLit
+							(CmmBlock
+								mainReturnEntryBId2_0))))
+			(CmmAssign
+				(CmmGlobal (VanillaReg 2 VNonGcPtr))
+				(CmmLit (CmmInt 1 W64))))
+		(CmmAssign
+			(CmmGlobal (VanillaReg 1 VNonGcPtr))
+			(CmmLit (CmmInt 10 W64)))
+mainCallCall0 :: CmmNode O C
+mainCallCall0 = CmmCall
+	(CmmLit (CmmLabel mkCmmCodeLTPDFF0))
+	(Just mainReturnEntryBId3_0)
+	[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
+	8 8 8
+
+----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
 
@@ -146,6 +186,26 @@ BSnoc	(BSnoc	(BSnoc	(BMiddle
 		(CmmGlobal (VanillaReg 1 VNonGcPtr))
 		(CmmLit (CmmInt 10 W64))) =
 	mainCallAssign
+
+realSrcSpanFact2152_0 :: RealSrcSpan
+realSrcSpanFact2152_0 = mkRealSrcSpan
+	(mkRealSrcLoc "samples/factorial.cmm" 2 1)
+	(mkRealSrcLoc "samples/factorial.cmm" 5 2)
+mainReturnEntryBId0, mainReturnEntryBId2_0 :: BlockId
+mainReturnEntryBId0 = mainReturnEntryLabel0
+mainReturnEntryBId2_0 = mainReturnEntryLabel0
+
+mkCmmCodeLTPDFF :: CLabel
+mainReturnEntryBId3 :: BlockId
+CmmCall	(CmmLit (CmmLabel mkCmmCodeLTPDFF))
+	(Just mainReturnEntryBId3)
+	[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
+	8 8 8 = mainCallCall
+
+mkCmmCodeLTPDFF0 :: CLabel
+mkCmmCodeLTPDFF0 = mkCmmCodeLabel (thisPackage dflags0) "factorial"
+mainReturnEntryBId3_0 :: BlockId
+mainReturnEntryBId3_0 = mainReturnEntryLabel0
 
 ----------------------------------------------------------------------
 
