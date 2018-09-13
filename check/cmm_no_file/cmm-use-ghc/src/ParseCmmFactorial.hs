@@ -26,16 +26,20 @@ myCmmFactorial = unsafePerformIO $ do
 	(_, Just cmm) <- parseCmmFile dflags0 "samples/factorial.cmm"
 	return cmm
 
+mainCmmDecl, factCmmDecl :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
+
+mainCmmDecl0 :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
+mainCmmDecl0 = CmmProc mainTopInfo0 mainCLabel0 mainGlobalRegs0 mainGraph0
+
 ----------------------------------------------------------------------
 
--- myCmmMain, myCmmFact :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
 mainTopInfo, factTopInfo :: CmmTopInfo
 mainCLabel, factCLabel :: CLabel
 mainGlobalRegs, factGlobalRegs :: [GlobalReg]
 mainGraph, factGraph :: CmmGraph
 [
-	CmmProc mainTopInfo mainCLabel mainGlobalRegs mainGraph,
-	CmmProc factTopInfo factCLabel factGlobalRegs factGraph
+	mainCmmDecl@(CmmProc mainTopInfo mainCLabel mainGlobalRegs mainGraph),
+	factCmmDecl@(CmmProc factTopInfo factCLabel factGlobalRegs factGraph)
 	] = myCmmFactorial
 
 mainTopInfo0, factTopInfo0 :: CmmTopInfo
@@ -48,7 +52,7 @@ mainGlobalRegs0, factGlobalRegs0 :: [GlobalReg]
 mainGlobalRegs0 = []
 factGlobalRegs0 = []
 mainGraph0 :: CmmGraph
-mainGraph0 = CmmGraph mainGEntry0  mainGGraph0
+mainGraph0 = CmmGraph mainGEntry0 mainGGraph0
 
 ----------------------------------------------------------------------
 
@@ -142,6 +146,43 @@ mainCallCall0 = CmmCall
 	[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
 	8 8 8
 
+factRecSourceSpan :: RealSrcSpan
+factRecBlockLabel :: Label
+mkCmmCodeLabelTPDF :: CLabel
+BlockCC	(CmmEntry factRecBlockLabel GlobalScope)
+	(BSnoc	(BSnoc	(BMiddle
+				(CmmTick
+					(SourceNote
+						factRecSourceSpan
+						"factorial")))
+			(CmmAssign
+				(CmmGlobal (VanillaReg 2 VNonGcPtr))
+				(CmmMachOp
+					(MO_Mul W64)
+					[	CmmReg	(CmmLocal
+								(LocalReg
+									c
+									itsB64_3)),
+						CmmReg	(CmmLocal
+								(LocalReg
+									f
+									itsB64_4)) ])))
+		e)
+	(CmmCall
+		(CmmLit (CmmLabel mkCmmCodeLabelTPDF))
+		Nothing
+		[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
+		8 0 8) = factRecBlock
+
+factRecBlockLabel0 :: Label
+factRecBlockLabel0 = factRecEntryLabel0
+factRecSourceSpan0 :: RealSrcSpan
+factRecSourceSpan0 = mkRealSrcSpan
+	(mkRealSrcLoc "samples/factorial.cmm" 9 20)
+	(mkRealSrcLoc "samples/factorial.cmm" 11 10)
+mkCmmCodeLabelTPDF0 :: CLabel
+mkCmmCodeLabelTPDF0 = mkCmmCodeLabel (thisPackage dflags0) "factorial"
+
 ----------------------------------------------------------------------
 
 ----------------------------------------------------------------------
@@ -219,8 +260,9 @@ CmmAssign
 
 ----------------------------------------------------------------------
 
-mainReturnEntryLabel0, mainCallEntryLabel0 :: Label
+mainReturnEntryLabel0, mainCallEntryLabel0, factRecEntryLabel0 :: Label
 mainReturnEntryLabel0 = mkBlockId unique0
 mainCallEntryLabel0 = mkBlockId unique2
-unique0, unique1, unique2 :: Unique
-unique0 : unique1 : unique2 : _ = unsafePerformIO $ getMyUniqueList 10
+factRecEntryLabel0 = mkBlockId unique3
+unique0, unique1, unique2, unique3 :: Unique
+unique0 : unique1 : unique2 : unique3 : _ = unsafePerformIO $ getMyUniqueList 10
