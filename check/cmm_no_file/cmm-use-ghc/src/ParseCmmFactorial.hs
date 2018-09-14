@@ -116,6 +116,15 @@ factRecBlock0 = BlockCC	(CmmEntry factRecBlockLabel0 GlobalScope)
 		[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
 		8 0 8)
 
+factLoop0 :: (Label, Block CmmNode C C)
+factLoop0 = (factLoopBlockLabel0, factLoopBlock0)
+
+factLoopBlock0 :: Block CmmNode C C
+factLoopBlock0 = BlockCC
+	(CmmEntry factLoopBlockLabel0 GlobalScope)
+	BNil
+	(CmmBranch factLoopBlockLabel0)
+
 ----------------------------------------------------------------------
 
 mainReturnEntry :: CmmNode C O
@@ -189,7 +198,6 @@ BlockCC	(CmmEntry factRecBlockLabel GlobalScope)
 		[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
 		8 0 8) = factRecBlock
 
-
 factRecSourceSpan0 :: RealSrcSpan
 factRecSourceSpan0 = mkRealSrcSpan
 	(mkRealSrcLoc "samples/factorial.cmm" 9 20)
@@ -206,6 +214,13 @@ decrementExpression0 :: CmmExpr
 decrementExpression0 = CmmMachOp (MO_Sub W64) [
 	CmmReg (CmmLocal (LocalReg uniqueFactIfR1_0 b64)),
 	CmmLit (CmmInt 1 W64) ]
+
+factLoopBlockLabel1, factLoopBlockLabel2 :: Label
+BlockCC	(CmmEntry factLoopBlockLabel1 GlobalScope)
+	BNil
+	(CmmBranch factLoopBlockLabel2) = factLoopBlock
+
+factLoopBlockLabel0 :: Label
 
 ----------------------------------------------------------------------
 
@@ -299,7 +314,8 @@ mainReturnEntryLabel0, mainCallEntryLabel0, factRecEntryLabel0 :: Label
 mainReturnEntryLabel0 = mkBlockId unique0
 mainCallEntryLabel0 = mkBlockId unique2
 factRecEntryLabel0 = mkBlockId unique3
-unique0, unique1, unique2, unique3 :: Unique
+factLoopBlockLabel0 = mkBlockId unique6
+unique0, unique1, unique2, unique3, unique6 :: Unique
 unique0 : unique1 : unique2 : unique3 :
-	uniqueFactIfR2_0 : uniqueFactIfR1_0 : _ =
+	uniqueFactIfR2_0 : uniqueFactIfR1_0 : unique6 : _ =
 	unsafePerformIO $ getMyUniqueList 10
