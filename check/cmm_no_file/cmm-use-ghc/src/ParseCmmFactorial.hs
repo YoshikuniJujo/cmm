@@ -125,6 +125,30 @@ factLoopBlock0 = BlockCC
 	BNil
 	(CmmBranch factLoopBlockLabel0)
 
+factReturn0 :: (Label, Block CmmNode C C)
+factReturn0 = (factReturnBlockLabel0, factReturnBlock0)
+
+factReturnBlock0 :: Block CmmNode C C
+factReturnBlock0 = BlockCC
+	(CmmEntry factReturnBlockLabel0 GlobalScope)
+	(BSnoc	(BMiddle
+			(CmmTick
+				(SourceNote
+					realSrcSpanFact11161310_0
+					"factorial")))
+		(CmmAssign
+			(CmmGlobal (VanillaReg 1 VNonGcPtr))
+			(CmmReg
+				(CmmLocal
+					(LocalReg
+						uniqueFactIfR2_0
+						b64)))))
+	(CmmCall
+		(CmmLoad (CmmStackSlot Old 8) b64)
+		Nothing
+		[VanillaReg 1 VNonGcPtr]
+		8 0 8)
+
 ----------------------------------------------------------------------
 
 mainReturnEntry :: CmmNode C O
@@ -222,6 +246,36 @@ BlockCC	(CmmEntry factLoopBlockLabel1 GlobalScope)
 
 factLoopBlockLabel0 :: Label
 
+realSrcSpanFact11161310 :: RealSrcSpan
+factReturnBlockLabel :: Label
+uniqueFactIfR2_2 :: Unique
+itsB64_6 :: CmmType
+itsB64_7 :: CmmType
+BlockCC	(CmmEntry factReturnBlockLabel GlobalScope)
+	(BSnoc	(BMiddle
+			(CmmTick
+				(SourceNote
+					realSrcSpanFact11161310
+					"factorial")))
+		(CmmAssign
+			(CmmGlobal (VanillaReg 1 VNonGcPtr))
+			(CmmReg
+				(CmmLocal
+					(LocalReg
+						uniqueFactIfR2_2
+						itsB64_6)))))
+	(CmmCall
+		(CmmLoad (CmmStackSlot Old 8) itsB64_7)
+		Nothing
+		[VanillaReg 1 VNonGcPtr]
+		8 0 8) = factReturnBlock
+
+realSrcSpanFact11161310_0 :: RealSrcSpan
+realSrcSpanFact11161310_0 = mkRealSrcSpan
+	(mkRealSrcLoc "samples/factorial.cmm" 11 16)
+	(mkRealSrcLoc "samples/factorial.cmm" 13 10)
+factReturnBlockLabel0 :: Label
+
 ----------------------------------------------------------------------
 
 uniqueFactIfR2, uniqueFactIfR1, uniqueFactIfR1_2 :: Unique
@@ -315,7 +369,9 @@ mainReturnEntryLabel0 = mkBlockId unique0
 mainCallEntryLabel0 = mkBlockId unique2
 factRecEntryLabel0 = mkBlockId unique3
 factLoopBlockLabel0 = mkBlockId unique6
+factReturnBlockLabel0 = mkBlockId unique7
 unique0, unique1, unique2, unique3, unique6 :: Unique
 unique0 : unique1 : unique2 : unique3 :
-	uniqueFactIfR2_0 : uniqueFactIfR1_0 : unique6 : _ =
+	uniqueFactIfR2_0 : uniqueFactIfR1_0 : unique6 :
+	unique7 : _ =
 	unsafePerformIO $ getMyUniqueList 10
