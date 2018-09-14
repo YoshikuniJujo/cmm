@@ -95,6 +95,27 @@ factRecBlock, factLoopBlock, factReturnBlock, factIfBlock :: Block CmmNode C C
 	(factReturnLabel, factReturnBlock),
 	(factIfLabel, factIfBlock) ] = mapToList factGManyCenter
 
+factRec0 :: (Label, Block CmmNode C C)
+factRec0 = (factRecBlockLabel0, factRecBlock0)
+
+factRecBlock0 :: Block CmmNode C C
+factRecBlock0 = BlockCC	(CmmEntry factRecBlockLabel0 GlobalScope)
+	(BSnoc	(BSnoc	(BMiddle
+				(CmmTick
+					(SourceNote
+						factRecSourceSpan0
+						"factorial")))
+			(CmmAssign
+				(CmmGlobal (VanillaReg 2 VNonGcPtr))
+				(CmmMachOp (MO_Mul W64) argsOfMul0)))
+		(CmmAssign	(CmmGlobal (VanillaReg 1 VNonGcPtr))
+				decrementExpression0))
+	(CmmCall
+		(CmmLit (CmmLabel mkCmmCodeLabelTPDF0))
+		Nothing
+		[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
+		8 0 8)
+
 ----------------------------------------------------------------------
 
 mainReturnEntry :: CmmNode C O
@@ -148,6 +169,8 @@ mainCallCall0 = CmmCall
 
 factRecSourceSpan :: RealSrcSpan
 factRecBlockLabel :: Label
+argsOfMul :: [CmmExpr]
+decrementExpression :: CmmExpr
 mkCmmCodeLabelTPDF :: CLabel
 BlockCC	(CmmEntry factRecBlockLabel GlobalScope)
 	(BSnoc	(BSnoc	(BMiddle
@@ -157,33 +180,45 @@ BlockCC	(CmmEntry factRecBlockLabel GlobalScope)
 						"factorial")))
 			(CmmAssign
 				(CmmGlobal (VanillaReg 2 VNonGcPtr))
-				(CmmMachOp
-					(MO_Mul W64)
-					[	CmmReg	(CmmLocal
-								(LocalReg
-									c
-									itsB64_3)),
-						CmmReg	(CmmLocal
-								(LocalReg
-									f
-									itsB64_4)) ])))
-		e)
+				(CmmMachOp (MO_Mul W64) argsOfMul)))
+		(CmmAssign	(CmmGlobal (VanillaReg 1 VNonGcPtr))
+				decrementExpression))
 	(CmmCall
 		(CmmLit (CmmLabel mkCmmCodeLabelTPDF))
 		Nothing
 		[VanillaReg 2 VNonGcPtr, VanillaReg 1 VNonGcPtr]
 		8 0 8) = factRecBlock
 
-factRecBlockLabel0 :: Label
-factRecBlockLabel0 = factRecEntryLabel0
+
 factRecSourceSpan0 :: RealSrcSpan
 factRecSourceSpan0 = mkRealSrcSpan
 	(mkRealSrcLoc "samples/factorial.cmm" 9 20)
 	(mkRealSrcLoc "samples/factorial.cmm" 11 10)
+factRecBlockLabel0 :: Label
+factRecBlockLabel0 = factRecEntryLabel0
 mkCmmCodeLabelTPDF0 :: CLabel
 mkCmmCodeLabelTPDF0 = mkCmmCodeLabel (thisPackage dflags0) "factorial"
+argsOfMul0 :: [CmmExpr]
+argsOfMul0 = [
+	CmmReg (CmmLocal (LocalReg uniqueFactIfR2_0 b64)),
+	CmmReg (CmmLocal (LocalReg uniqueFactIfR1_0 b64)) ]
+decrementExpression0 :: CmmExpr
+decrementExpression0 = CmmMachOp (MO_Sub W64) [
+	CmmReg (CmmLocal (LocalReg uniqueFactIfR1_0 b64)),
+	CmmLit (CmmInt 1 W64) ]
 
 ----------------------------------------------------------------------
+
+uniqueFactIfR2, uniqueFactIfR1, uniqueFactIfR1_2 :: Unique
+itsB64_3, itsB64_4, itsB64_5 :: CmmType
+[	CmmReg (CmmLocal (LocalReg uniqueFactIfR2 itsB64_3)),
+	CmmReg (CmmLocal (LocalReg uniqueFactIfR1 itsB64_4)) ] = argsOfMul
+CmmMachOp
+	(MO_Sub W64)
+	[	CmmReg (CmmLocal (LocalReg uniqueFactIfR1_2 itsB64_5)),
+		CmmLit (CmmInt 1 W64) ] = decrementExpression
+
+uniqueFactIfR2_0, uniqueFactIfR1_0 :: Unique
 
 ----------------------------------------------------------------------
 
@@ -265,4 +300,6 @@ mainReturnEntryLabel0 = mkBlockId unique0
 mainCallEntryLabel0 = mkBlockId unique2
 factRecEntryLabel0 = mkBlockId unique3
 unique0, unique1, unique2, unique3 :: Unique
-unique0 : unique1 : unique2 : unique3 : _ = unsafePerformIO $ getMyUniqueList 10
+unique0 : unique1 : unique2 : unique3 :
+	uniqueFactIfR2_0 : uniqueFactIfR1_0 : _ =
+	unsafePerformIO $ getMyUniqueList 10
