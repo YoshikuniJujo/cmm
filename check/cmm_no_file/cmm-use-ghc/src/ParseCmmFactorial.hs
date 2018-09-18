@@ -276,6 +276,19 @@ realSrcSpanFact11161310_0 = mkRealSrcSpan
 	(mkRealSrcLoc "samples/factorial.cmm" 13 10)
 factReturnBlockLabel0 :: Label
 
+BlockCC	(CmmEntry factIfBlockLabel GlobalScope)
+	(BSnoc	(BSnoc	(BMiddle
+				(CmmAssign
+					(CmmLocal
+						(LocalReg
+							uniqueFactIfR2_3
+							itsB64_8))
+					(CmmReg	(CmmGlobal
+						(VanillaReg 2 VNonGcPtr)))))
+			g)
+		(CmmTick (SourceNote realSrcSpanFact81142 "factorial")))
+	c = factIfBlock
+
 ----------------------------------------------------------------------
 
 uniqueFactIfR2, uniqueFactIfR1, uniqueFactIfR1_2 :: Unique
@@ -370,7 +383,7 @@ mainCallEntryLabel0 = mkBlockId unique2
 factRecEntryLabel0 = mkBlockId unique3
 factLoopBlockLabel0 = mkBlockId unique6
 factReturnBlockLabel0 = mkBlockId unique7
-unique0, unique1, unique2, unique3, unique6 :: Unique
+unique0, unique1, unique2, unique3, unique6, unique7 :: Unique
 unique0 : unique1 : unique2 : unique3 :
 	uniqueFactIfR2_0 : uniqueFactIfR1_0 : unique6 :
 	unique7 : _ =
