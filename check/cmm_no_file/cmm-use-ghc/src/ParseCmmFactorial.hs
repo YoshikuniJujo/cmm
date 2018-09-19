@@ -149,6 +149,26 @@ factReturnBlock0 = BlockCC
 		[VanillaReg 1 VNonGcPtr]
 		8 0 8)
 
+factIfBlock0 = BlockCC
+	(CmmEntry factIfBlockLabel0 GlobalScope)
+	(BSnoc	(BSnoc	(BMiddle
+				(CmmAssign
+					(CmmLocal
+						(LocalReg uniqueFactIfR2_0 b64))
+					(CmmReg	(CmmGlobal
+						(VanillaReg 2 VNonGcPtr)))))
+			(CmmAssign
+				(CmmLocal (LocalReg uniqueFactIfR1_0 b64))
+				(CmmReg (CmmGlobal (VanillaReg 1 VNonGcPtr)))))
+		(CmmTick (SourceNote realSrcSpanFact81142_0 "factorial")))
+	(CmmCondBranch
+		(CmmMachOp (MO_U_Gt W64) [
+			CmmReg (CmmLocal (LocalReg uniqueFactIfR1_0 b64)),
+			CmmLit (CmmInt 0 W64) ])
+		factRecBlockLabel0
+		factReturnBlockLabel0
+		Nothing)
+
 ----------------------------------------------------------------------
 
 mainReturnEntry :: CmmNode C O
@@ -306,6 +326,12 @@ BlockCC	(CmmEntry factIfBlockLabel GlobalScope)
 		factReturnBlockLabel_2
 		Nothing) = factIfBlock
 
+factIfBlockLabel0 :: BlockId
+realSrcSpanFact81142_0 :: RealSrcSpan
+realSrcSpanFact81142_0 = mkRealSrcSpan
+	(mkRealSrcLoc "samples/factorial.cmm" 8 1)
+	(mkRealSrcLoc "samples/factorial.cmm" 14 2)
+
 ----------------------------------------------------------------------
 
 uniqueFactIfR2, uniqueFactIfR1, uniqueFactIfR1_2 :: Unique
@@ -400,8 +426,9 @@ mainCallEntryLabel0 = mkBlockId unique2
 factRecEntryLabel0 = mkBlockId unique3
 factLoopBlockLabel0 = mkBlockId unique6
 factReturnBlockLabel0 = mkBlockId unique7
-unique0, unique1, unique2, unique3, unique6, unique7 :: Unique
+factIfBlockLabel0 = mkBlockId unique8
+unique0, unique1, unique2, unique3, unique6, unique7, unique8 :: Unique
 unique0 : unique1 : unique2 : unique3 :
 	uniqueFactIfR2_0 : uniqueFactIfR1_0 : unique6 :
-	unique7 : _ =
+	unique7 : unique8 : _ =
 	unsafePerformIO $ getMyUniqueList 10
