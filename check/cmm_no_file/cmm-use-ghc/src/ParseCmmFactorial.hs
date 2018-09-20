@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module ParseCmmFactorial where
+module ParseCmmFactorial (myCmmFactorial, myCmmFactorial0) where
 
 import System.IO.Unsafe
 
@@ -26,10 +26,14 @@ myCmmFactorial = unsafePerformIO $ do
 	(_, Just cmm) <- parseCmmFile dflags0 "samples/factorial.cmm"
 	return cmm
 
+myCmmFactorial0 :: CmmGroup
+myCmmFactorial0 = [mainCmmDecl0, factCmmDecl0]
+
 mainCmmDecl, factCmmDecl :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
 
-mainCmmDecl0 :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
+mainCmmDecl0, factCmmDecl0 :: GenCmmDecl CmmStatics CmmTopInfo CmmGraph
 mainCmmDecl0 = CmmProc mainTopInfo0 mainCLabel0 mainGlobalRegs0 mainGraph0
+factCmmDecl0 = CmmProc factTopInfo0 factCLabel0 factGlobalRegs0 factGraph0
 
 ----------------------------------------------------------------------
 
@@ -53,6 +57,8 @@ mainGlobalRegs0 = []
 factGlobalRegs0 = []
 mainGraph0 :: CmmGraph
 mainGraph0 = CmmGraph mainGEntry0 mainGGraph0
+factGraph0 :: CmmGraph
+factGraph0 = CmmGraph factGEntry0 factGGraph0
 
 ----------------------------------------------------------------------
 
@@ -66,6 +72,11 @@ mainGEntry0 = mainCallEntryLabel0
 mainGGraph0 :: Graph CmmNode C C
 mainGGraph0 = GMany NothingO mainGManyCenter0 NothingO
 
+factGEntry0 :: BlockId
+factGEntry0 = factIfBlockLabel0
+factGGraph0 :: Graph CmmNode C C
+factGGraph0 = GMany NothingO factGManyCenter0 NothingO
+
 ----------------------------------------------------------------------
 
 mainGManyCenter, factGManyCenter :: Body CmmNode
@@ -76,6 +87,9 @@ mainGManyCenter0 :: Body CmmNode
 mainGManyCenter0 = mapFromList [
 	(mainReturnEntryLabel0, mainReturnBlock0),
 	(mainCallEntryLabel0, mainCallBlock0) ]
+
+factGManyCenter0 :: Body CmmNode
+factGManyCenter0 = mapFromList [factRec0, factLoop0, factReturn0, factIf0]
 
 ----------------------------------------------------------------------
 
@@ -149,6 +163,10 @@ factReturnBlock0 = BlockCC
 		[VanillaReg 1 VNonGcPtr]
 		8 0 8)
 
+factIf0 :: (Label, Block CmmNode C C)
+factIf0 = (factIfBlockLabel0, factIfBlock0)
+
+factIfBlock0 :: Block CmmNode C C
 factIfBlock0 = BlockCC
 	(CmmEntry factIfBlockLabel0 GlobalScope)
 	(BSnoc	(BSnoc	(BMiddle
