@@ -1,0 +1,20 @@
+section "data"
+{
+	memory: bits8[30000];
+}
+
+cmm_main()
+{
+	R2 = memory;
+
+	bits8[R2] = bits8[R2] + 1;
+	bits8[R2] = bits8[R2] + 1;
+	R2 = R2 + 1;
+	bits8[R2] = bits8[R2] + 1;
+	bits8[R2] = bits8[R2] + 1;
+	bits8[R2] = bits8[R2] + 1;
+	bits8[R2] = bits8[R2] + 1;
+	R2 = R2 - 1;
+
+	return(bits8[R2]);
+}
