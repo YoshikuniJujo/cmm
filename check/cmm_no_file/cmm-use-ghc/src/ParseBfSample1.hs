@@ -15,6 +15,7 @@ import Hoopl.Graph
 import Hoopl.Block
 import BlockId
 import Unique
+import Module
 
 import Tools
 import ToolsCmmGroup
@@ -82,6 +83,8 @@ gcWordDF0 = gcWord dflags0
 ----------------------------------------------------------------------
 
 cmmMainBodyList :: [CmmNode O O]
+cmmMainInitialize, cmmMainIncrementValue, cmmMainIncrementPointer,
+	cmmMainDecrementPointer, cmmMainReturnValue :: CmmNode O O
 cmmMainBodyList@[
 	cmmMainInitialize,
 	cmmMainIncrementValue,
@@ -94,6 +97,21 @@ cmmMainBodyList@[
 	cmmMainDecrementPointer,
 	cmmMainReturnValue
 	] = filter notCmmTick $ bSnocToList cmmMainBody
+
+cmmMainInitialize0 :: CmmNode O O
+cmmMainInitialize0 = CmmAssign
+	(CmmGlobal (VanillaReg 2 VNonGcPtr))
+	(CmmLit (CmmLabel mkCmmCodeLabelRtsUnitIdMemory0))
+
+----------------------------------------------------------------------
+
+mkCmmCodeLabelRtsUnitIdMemory :: CLabel
+CmmAssign
+	(CmmGlobal (VanillaReg 2 VNonGcPtr))
+	(CmmLit (CmmLabel mkCmmCodeLabelRtsUnitIdMemory)) = cmmMainInitialize
+
+mkCmmCodeLabelRtsUnitIdMemory0 :: CLabel
+mkCmmCodeLabelRtsUnitIdMemory0 = mkCmmCodeLabel rtsUnitId "memory"
 
 ----------------------------------------------------------------------
 
