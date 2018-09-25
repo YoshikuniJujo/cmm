@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module ParseBfSample1 where
@@ -9,6 +9,12 @@ import DynFlags
 import Cmm
 import CmmParse
 import CLabel
+import Hoopl.Collections
+import Hoopl.Label
+import Hoopl.Graph
+import Hoopl.Block
+import BlockId
+import Unique
 
 import Tools
 import ToolsCmmGroup
@@ -25,12 +31,71 @@ myCmmData0 = CmmData
 
 ----------------------------------------------------------------------
 
+mkCmmDataLabelTPDFMem1, mkCmmDataLabelTPDFMem2 :: CLabel
+cmmUninitialised30000 :: CmmStatic
+
+mkCmmCodeLabelTPDFCmmMain :: CLabel
+itsMapEmpty :: LabelMap CmmInfoTable
+cmmBlockId1 :: BlockId
+cmmMainGManyCenter :: Body CmmNode
 [
 	CmmData	(Section Data mkCmmDataLabelTPDFMem1)
 		(Statics mkCmmDataLabelTPDFMem2 [cmmUninitialised30000]),
-	c ] = myBfSample1
+	CmmProc	(TopInfo itsMapEmpty (StackInfo 8 (Just 8) True))
+		mkCmmCodeLabelTPDFCmmMain
+		[]
+		(CmmGraph
+			cmmBlockId1
+			(GMany	NothingO cmmMainGManyCenter NothingO))
+	] = myBfSample1
 
 mkCmmDataLabelTPDFMem0 :: CLabel
 mkCmmDataLabelTPDFMem0 = mkCmmDataLabel (thisPackage dflags0) "memory"
 cmmUninitialised30000_0 :: CmmStatic
 cmmUninitialised30000_0 = CmmUninitialised 30000
+
+itsMapEmpty0 :: LabelMap CmmInfoTable
+itsMapEmpty0 = mapEmpty
+mkCmmCodeLabelTPDFCmmMain0 :: CLabel
+mkCmmCodeLabelTPDFCmmMain0 = mkCmmCodeLabel (thisPackage dflags0) "cmm_main"
+cmmBlockId0 :: BlockId
+cmmBlockId0 = mkBlockId unique1
+
+----------------------------------------------------------------------
+
+cmmBlockId2, cmmBlockId3 :: BlockId
+cmmMainBody :: Block CmmNode O O
+gcWordDF1 :: CmmType
+[(	cmmBlockId2,
+	(BlockCC
+		(CmmEntry cmmBlockId3 GlobalScope)
+		cmmMainBody
+		(CmmCall
+			(CmmLoad (CmmStackSlot Old 8) gcWordDF1)
+			Nothing
+			[VanillaReg 1 VNonGcPtr]
+			8 0 8)) )] = mapToList cmmMainGManyCenter
+
+gcWordDF0 :: CmmType
+gcWordDF0 = gcWord dflags0
+
+----------------------------------------------------------------------
+
+cmmMainBodyList :: [CmmNode O O]
+cmmMainBodyList@[
+	cmmMainInitialize,
+	cmmMainIncrementValue,
+	_,
+	cmmMainIncrementPointer,
+	_,
+	_,
+	_,
+	_,
+	cmmMainDecrementPointer,
+	cmmMainReturnValue
+	] = filter notCmmTick $ bSnocToList cmmMainBody
+
+----------------------------------------------------------------------
+
+unique1 :: Unique
+unique1 : _ = unsafePerformIO $ getMyUniqueList 10

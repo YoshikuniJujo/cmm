@@ -73,3 +73,17 @@ checkTickish = \case
 	HpcTick _ _ -> "HpcTick"
 	Breakpoint _ _ -> "Breakpoint"
 	SourceNote  _ _ -> "SourceNote"
+
+bSnocToList :: Block a O O -> [a O O]
+bSnocToList (BSnoc xs x) = bSnocToList xs ++ [x]
+bSnocToList (BMiddle x) = [x]
+bSnocToList _ = error "not implemented"
+
+listToBSnoc :: [a O O] -> Block a O O
+listToBSnoc [x] = BMiddle x
+listToBSnoc [] = BNil
+listToBSnoc xs = BSnoc (listToBSnoc $ init xs) (last xs)
+
+notCmmTick :: CmmNode e x -> Bool
+notCmmTick (CmmTick _) = False
+notCmmTick _ = True
