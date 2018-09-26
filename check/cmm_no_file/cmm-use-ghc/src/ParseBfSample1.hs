@@ -102,6 +102,15 @@ cmmMainInitialize0 :: CmmNode O O
 cmmMainInitialize0 = CmmAssign
 	(CmmGlobal (VanillaReg 2 VNonGcPtr))
 	(CmmLit (CmmLabel mkCmmCodeLabelRtsUnitIdMemory0))
+cmmMainIncrementValue0 :: CmmNode O O
+cmmMainIncrementValue0 = CmmStore
+	(CmmReg (CmmGlobal (VanillaReg 2 VNonGcPtr)))
+	(CmmMachOp
+		(MO_Add W8)
+		[	CmmLoad
+				(CmmReg (CmmGlobal (VanillaReg 2 VNonGcPtr)))
+				itsB8_0,
+			CmmLit (CmmInt 1 W64) ])
 
 ----------------------------------------------------------------------
 
@@ -109,9 +118,20 @@ mkCmmCodeLabelRtsUnitIdMemory :: CLabel
 CmmAssign
 	(CmmGlobal (VanillaReg 2 VNonGcPtr))
 	(CmmLit (CmmLabel mkCmmCodeLabelRtsUnitIdMemory)) = cmmMainInitialize
+itsB8 :: CmmType
+CmmStore
+	(CmmReg (CmmGlobal (VanillaReg 2 VNonGcPtr)))
+	(CmmMachOp
+		(MO_Add W8)
+		[	CmmLoad
+				(CmmReg (CmmGlobal (VanillaReg 2 VNonGcPtr)))
+				itsB8,
+			CmmLit (CmmInt 1 W64) ]) = cmmMainIncrementValue
 
 mkCmmCodeLabelRtsUnitIdMemory0 :: CLabel
 mkCmmCodeLabelRtsUnitIdMemory0 = mkCmmCodeLabel rtsUnitId "memory"
+itsB8_0 :: CmmType
+itsB8_0 = b8
 
 ----------------------------------------------------------------------
 
