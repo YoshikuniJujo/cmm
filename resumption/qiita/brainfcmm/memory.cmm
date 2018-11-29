@@ -1,0 +1,10 @@
+section "data"
+{
+	memory: bits8[30000];
+}
+
+cmm_main()
+{
+	R2 = memory;
+	return(R2);
+}

@@ -1,0 +1,14 @@
+summation(bits64 n, bits64 s)
+{
+	if (n > 0) {
+		jump summation(n - 1, s + n);
+	} else {
+		return(s);
+	}
+}
+
+foo()
+{
+	(bits64 ret) = call summation(100000000, 0);
+	return(ret);
+}

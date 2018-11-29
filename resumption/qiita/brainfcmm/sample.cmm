@@ -1,0 +1,4 @@
+cmm_main()
+{
+	return(123);
+}

@@ -1,0 +1,28 @@
+section "data"
+{
+	memory: bits8[30000];
+}
+
+cmm_main()
+{
+	R2 = memory;
+
+
+	bits8[R2] = bits8[R2] + 1;
+	call loop();
+
+	return(bits8[R2]);
+}
+
+loop()
+{
+	if (bits8[R2] > 0) {
+		R2 = R2 + 1;
+		(bits8 r) = call getchar_syscall(); bits8[R2] = r;
+		call putchar_syscall(bits8[R2]);
+		R2 = R2 - 1;
+		jump loop();
+	} else {
+		return();
+	}
+}
