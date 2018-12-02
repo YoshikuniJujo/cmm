@@ -3,7 +3,7 @@
 int
 main(int argc, char *argv[])
 {
-	unsigned int r;
+	unsigned char r;
 
 	__asm__(
 		"addq $-16, %%rsp\n\t"
