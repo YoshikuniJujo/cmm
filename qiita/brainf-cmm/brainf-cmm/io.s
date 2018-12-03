@@ -1,3 +1,5 @@
+	.comm ch,1
+
 	.global putchar_syscall
 putchar_syscall:
 	movb %bl, ch(%rip)
@@ -19,5 +21,3 @@ getchar_syscall:
 	xorq %rbx, %rbx
 	movb ch(%rip), %bl
 	jmp *(%rbp)
-
-	.comm ch,1
