@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
-module BrainfParser (ParseForest, ParseTree(..), prsBrainfCmm) where
+module BrainfParser (ParseForest, ParseTree(..), prsBrainf) where
 
 import Control.Applicative (many)
 import Text.Parser.Combinators (choice)
@@ -8,8 +8,8 @@ import Text.Parser.Char (CharParsing, char, noneOf)
 
 import ParseForest (ParseForest, ParseTree(..), Op(..))
 
-prsBrainfCmm :: CharParsing p => p ParseForest
-prsBrainfCmm = many $ choice [
+prsBrainf :: CharParsing p => p ParseForest
+prsBrainf = many $ choice [
 	prsNop, prsPtrInc, prsPtrDec, prsValInc, prsValDec,
 	prsPutCh, prsGetCh, prsLoop ]
 
@@ -22,4 +22,4 @@ prsValInc = PtOp ValInc <$ char '+'
 prsValDec = PtOp ValDec <$ char '-'
 prsPutCh = PtOp PutCh <$ char '.'
 prsGetCh = PtOp GetCh <$ char ','
-prsLoop = PtLoop <$> (char '[' *> prsBrainfCmm <* char ']')
+prsLoop = PtLoop <$> (char '[' *> prsBrainf <* char ']')

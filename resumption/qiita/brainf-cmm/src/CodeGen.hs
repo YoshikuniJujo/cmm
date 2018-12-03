@@ -1,9 +1,9 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TupleSections, QuasiQuotes #-}
 {-# OPTIONS_GHC -Wall -fno-warn-tabs #-}
 
 module CodeGen (codeGen) where
--- module CodeGen where
 
+import Text.Nowdoc
 import ParseForest (ParseForest, ParseTree(..), Op(..))
 
 data Function = Function { funName :: FunName, funBody :: [OpCall] }
@@ -37,8 +37,8 @@ toInstr i (Op GetCh) = "\t\t(bits8 r" ++ show i ++
 toInstr _ (Call fn) = "\t\tcall " ++ fn ++ "();\n"
 
 topFun :: Function -> String
-topFun Function { funName = fn, funBody = fb } = fn ++
-	"()\n{\n" ++ concat (zipWith toInstr [1 ..] fb) ++ "\t\treturn();\n}\n\n"
+topFun Function { funName = fn, funBody = fb } = fn ++ "()\n{\n" ++
+	concat (zipWith toInstr [1 ..] fb) ++ "\t\treturn();\n}\n\n"
 
 loopFun :: Function -> String
 loopFun Function { funName = fn, funBody = fb } = fn ++ "()\n{\n" ++
@@ -50,10 +50,20 @@ intoLoop fn ops =
 	"} else {\n\t\treturn();\n\t}\n"
 
 header :: String
-header =
-	"section \"data\"\n{\n\tmemory: bits8[30000];\n}\n\n" ++
-	"cmm_main()\n{\n\t" ++
-	"R2 = memory;\n\tcall fun();\n\treturn(bits8[R2]);\n}\n\n"
+header = [nowdoc|
+section "data"
+{
+	memory: bits8[30000];
+}
+
+cmm_main()
+{
+	R2 = memory;
+	call fun();
+	return(bits8[R2]);
+}
+
+|]
 
 codeGen :: ParseForest -> String
 codeGen = toCmm . toFunctions . ("fun" ,)
