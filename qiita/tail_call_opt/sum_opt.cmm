@@ -9,6 +9,6 @@ summation(bits64 n, bits64 s)
 
 foo()
 {
-	(bits64 ret) = call summation(100000000, 0);
+	(bits64 ret) = call summation(1000000000, 0);
 	return(ret);
 }
